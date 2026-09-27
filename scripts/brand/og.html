@@ -1,0 +1,72 @@
+<!doctype html>
+<!-- 1200×630 social preview card (Open Graph / Twitter), in the Editorial Ledger style. Rendered by generate-brand.mjs. -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 100 900; src: url("../../public/fonts/fraunces.woff2") format("woff2"); }
+      @font-face { font-family: "Fraunces"; font-style: italic; font-weight: 100 900; src: url("../../public/fonts/fraunces-italic.woff2") format("woff2"); }
+      @font-face { font-family: "Instrument Sans"; font-weight: 400 700; src: url("../../public/fonts/instrument-sans.woff2") format("woff2"); }
+      html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+      body { background: #f2ede3; color: #1b1916; font-family: "Instrument Sans", sans-serif; padding: 0 72px; box-sizing: border-box; position: relative; }
+      .sc { font-size: 13px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #6b6358; }
+      .mast { height: 104px; display: flex; align-items: center; }
+      .wm { font-family: "Fraunces", serif; font-style: italic; font-weight: 480; font-size: 40px; letter-spacing: -0.02em; }
+      .mast .sc { margin-left: auto; }
+      .dbl { height: 7px; border-top: 2px solid #1b1916; border-bottom: 1px solid #1b1916; }
+      .grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 40px; align-items: center; margin-top: 40px; }
+      h1 { margin: 16px 0 0; font-family: "Fraunces", serif; font-weight: 350; font-size: 78px; line-height: 0.98; letter-spacing: -0.035em; }
+      h1 b { font-weight: 520; font-variant-numeric: lining-nums; }
+      h1 em { font-weight: 300; }
+      p.deck { margin: 22px 0 0; font-family: "Fraunces", serif; font-style: italic; font-weight: 350; font-size: 25px; line-height: 1.4; color: #4a453d; }
+      p.deck span { color: #a53b26; }
+      .split { display: flex; height: 12px; margin-top: 30px; width: 460px; }
+      .split .p { width: 95%; background: #4a6236; }
+      .split .u { flex: 1; border: 1.5px solid #1b1916; border-left: 0; background: repeating-linear-gradient(135deg, #1b1916 0 1.3px, transparent 1.3px 4.5px); }
+      svg { width: 100%; }
+    </style>
+  </head>
+  <body>
+    <div class="mast"><span class="wm">Billwise</span><span class="sc">A private ledger · No account</span></div>
+    <div class="dbl"></div>
+    <div class="grid">
+      <div>
+        <span class="sc">No. 09 — The month in brief</span>
+        <h1>You owe <b>$3,208.74</b> <em>in September.</em></h1>
+        <p class="deck">Nine of twelve bills are settled. <span>One is late</span>; the rest can wait until Wednesday.</p>
+        <div class="split"><div class="p"></div><div class="u"></div></div>
+      </div>
+      <svg viewBox="0 0 320 230" aria-hidden="true">
+        <defs>
+          <pattern id="h1" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="4" stroke="#1b1916" stroke-width="0.9" /></pattern>
+          <pattern id="h2" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)"><line x1="0" y1="0" x2="0" y2="6" stroke="#1b1916" stroke-width="0.7" /></pattern>
+        </defs>
+        <g fill="none" stroke="#1b1916" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round">
+          <g transform="rotate(-7 150 120)">
+            <rect x="34" y="52" width="210" height="132" fill="#f2ede3" />
+            <path d="M34 184 L118 118 M244 184 L160 118" />
+            <path d="M34 52 L139 128 L244 52" fill="url(#h2)" />
+          </g>
+          <g transform="rotate(5 170 130)">
+            <rect x="66" y="72" width="216" height="136" fill="#f2ede3" />
+            <path d="M66 208 L154 142 L282 208" fill="url(#h1)" opacity=".55" />
+            <path d="M66 72 L174 150 L282 72" fill="#f2ede3" />
+            <rect x="236" y="84" width="34" height="40" stroke-dasharray="2 2" />
+            <rect x="241" y="89" width="24" height="30" fill="url(#h1)" />
+            <circle cx="222" cy="112" r="17" stroke-width="1" />
+            <circle cx="222" cy="112" r="12" stroke-width=".8" />
+            <path d="M190 104 q8 -5 16 0 t16 0 M186 114 q8 -5 16 0 t16 0 M190 124 q8 -5 16 0 t16 0" stroke-width=".9" />
+            <circle cx="174" cy="150" r="15" fill="#a53b26" />
+            <path d="M169 143 v14 M169 143 h5 a3.5 3.5 0 0 1 0 7 h-5 M169 150 h6 a3.5 3.5 0 0 1 0 7 h-6" stroke="#f2ede3" stroke-width="1.8" />
+          </g>
+          <g transform="rotate(-32 90 190)">
+            <path d="M-4 186 L150 186 L160 192 L150 198 L-4 198 Z" fill="url(#h1)" />
+            <path d="M160 185 Q182 188 200 192 Q182 196 160 199 Z" fill="#f2ede3" />
+            <path d="M172 192 L198 192" stroke-width=".8" />
+            <circle cx="178" cy="192" r="1.6" fill="#1b1916" />
+          </g>
+        </g>
+      </svg>
+    </div>
+  </body>
+</html>

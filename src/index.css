@@ -1,0 +1,242 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/*  Type — Fraunces + Instrument Sans, self-hosted (SIL OFL, licenses  */
+/*  in /fonts). The faces are registered from src/lib/fonts.ts right   */
+/*  after first paint; until they land, text sets in the fallbacks     */
+/*  below, whose metrics are adjusted to keep lines from reflowing.    */
+/* ------------------------------------------------------------------ */
+
+@font-face {
+  font-family: "Fraunces Fallback";
+  src: local("Georgia"), local("Times New Roman");
+  size-adjust: 97%;
+  ascent-override: 96%;
+  descent-override: 25%;
+}
+@font-face {
+  font-family: "Instrument Sans Fallback";
+  src: local("Arial"), local("Helvetica Neue"), local("Helvetica");
+  size-adjust: 95%;
+  ascent-override: 98%;
+  descent-override: 24%;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Tokens — the Editorial Ledger palette. Four colors: paper, ink,    */
+/*  vermilion (late / attention), olive (settled). Every text pair is  */
+/*  ≥ 4.5:1 and every control boundary ≥ 3:1 on bg, bg-2 and surface. */
+/* ------------------------------------------------------------------ */
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-control: var(--control);
+  --color-verm: var(--verm);
+  --color-verm-soft: var(--verm-soft);
+  --color-olive: var(--olive);
+  --color-olive-soft: var(--olive-soft);
+  --color-on-ink: var(--on-ink);
+
+  --font-serif: "Fraunces", "Fraunces Fallback", Georgia, serif;
+  --font-sans: "Instrument Sans", "Instrument Sans Fallback", ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Paper edition */
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f2ede3;
+  --bg-2: #e9e2d4;
+  --surface: #f8f5ee;
+  --ink: #1b1916;
+  --ink-2: #4a453d;
+  --muted: #6b6358;
+  --rule: rgba(27, 25, 22, 0.14);
+  --rule-strong: rgba(27, 25, 22, 0.5);
+  --control: #7a7164;
+  --verm: #a53b26;
+  --verm-soft: rgba(165, 59, 38, 0.08);
+  --olive: #4a6236;
+  --olive-soft: rgba(74, 98, 54, 0.1);
+  --on-ink: #f2ede3;
+  --shadow-pop: 0 1px 0 rgba(27, 25, 22, 0.06), 0 24px 60px -24px rgba(27, 25, 22, 0.35);
+  --grain-opacity: 0.35;
+}
+
+/* Ink edition */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #16140f;
+  --bg-2: #211e18;
+  --surface: #1d1a15;
+  --ink: #ede6d8;
+  --ink-2: #c9c0b0;
+  --muted: #a39a8a;
+  --rule: rgba(237, 230, 216, 0.13);
+  --rule-strong: rgba(237, 230, 216, 0.45);
+  --control: #7d7568;
+  --verm: #e0694f;
+  --verm-soft: rgba(224, 105, 79, 0.1);
+  --olive: #9db57f;
+  --olive-soft: rgba(157, 181, 127, 0.1);
+  --on-ink: #16140f;
+  --shadow-pop: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 28px 60px -20px rgba(0, 0, 0, 0.8);
+  --grain-opacity: 0.12;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Base                                                               */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    min-height: 100dvh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  /* A whisper of paper grain. Static, so it costs nothing after first paint. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .1  0 0 0 0 .09  0 0 0 0 .08  0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  :root[data-theme="dark"] body::before {
+    mix-blend-mode: screen;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  label[for],
+  select {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 2px solid var(--verm);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.7;
+  }
+  :root[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.9);
+  }
+}
+
+@layer components {
+  /* Figures: serif, lining, tabular — numbers are set like headlines. */
+  .fig {
+    font-family: var(--font-serif);
+    font-variant-numeric: lining-nums tabular-nums;
+    font-optical-sizing: auto;
+  }
+  /* Small-caps label. */
+  .sc {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .field {
+    width: 100%;
+    min-height: 2.875rem;
+    border-radius: 3px;
+    border: 1px solid var(--control);
+    background: var(--surface);
+    padding: 0.625rem 0.75rem;
+    color: var(--ink);
+    font-size: 1rem; /* 16px avoids iOS zoom-on-focus */
+    transition: border-color 160ms, box-shadow 160ms;
+  }
+  .field::placeholder {
+    color: var(--muted);
+  }
+  .field:hover {
+    border-color: var(--ink-2);
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: 0 0 0 1px var(--ink);
+  }
+  .field[aria-invalid="true"] {
+    border-color: var(--verm);
+    box-shadow: 0 0 0 1px var(--verm);
+  }
+  .label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  /* Double rule under the masthead, as in a newspaper. */
+  .rule-double {
+    height: 5px;
+    border-top: 1.5px solid var(--ink);
+    border-bottom: 0.75px solid var(--ink);
+  }
+  /* Engraving-style hatching in the current text color. */
+  .hatch {
+    background-image: repeating-linear-gradient(135deg, currentColor 0 1.2px, transparent 1.2px 4px);
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .hatch {
+    background: CanvasText;
+  }
+}

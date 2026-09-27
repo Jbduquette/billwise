@@ -1,0 +1,25 @@
+<!doctype html>
+<!-- Full-bleed app icon, sized by the ?s=<px> query (see generate-brand.mjs).
+     The mark stays inside the central 60% so it survives maskable/rounded crops. -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face { font-family: "Fraunces"; font-style: italic; font-weight: 100 900; src: url("../../public/fonts/fraunces-italic.woff2") format("woff2"); }
+      html, body { margin: 0; overflow: hidden; }
+      /* Sized from ?s=<px>: headless Chrome enforces a minimum window width, so viewport units can't be trusted. */
+      body { position: relative; width: var(--s); height: var(--s); background: #1b1916; display: grid; place-items: center; }
+      .mark { position: relative; font-family: "Fraunces", Georgia, serif; font-style: italic; font-weight: 420;
+              font-size: calc(var(--s) * 0.56); line-height: 1; color: #f2ede3; transform: translate(-3%, -2%); }
+      .mark i { position: absolute; right: calc(var(--s) * -0.1); bottom: calc(var(--s) * 0.075);
+                width: calc(var(--s) * 0.085); height: calc(var(--s) * 0.085); border-radius: 50%; background: #e0694f; }
+      .rule { position: absolute; left: 22%; right: 22%; bottom: 17%; height: calc(var(--s) * 0.024);
+              border-top: calc(var(--s) * 0.008) solid #f2ede3; border-bottom: calc(var(--s) * 0.004) solid #f2ede3; opacity: .55; }
+    </style>
+  </head>
+  <body>
+    <script>document.documentElement.style.setProperty('--s', (new URLSearchParams(location.search).get('s') || 512) + 'px')</script>
+    <div class="mark">B<i></i></div>
+    <div class="rule"></div>
+  </body>
+</html>

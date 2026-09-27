@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Billwise — Every bill, set in order</title>
+    <meta name="description" content="A private ledger for your bills. See what you owe this month, what falls due, what's settled and what's still open. No account; nothing leaves your browser." />
+    <meta name="application-name" content="Billwise" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#f2ede3" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Social previews. Set VITE_SITE_URL in .env so these become absolute URLs. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Billwise" />
+    <meta property="og:title" content="Billwise — Every bill, set in order" />
+    <meta property="og:description" content="What you owe, what falls due, and what's settled — a private ledger for every bill." />
+    <meta property="og:url" content="%VITE_SITE_URL%/" />
+    <meta property="og:image" content="%VITE_SITE_URL%/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Billwise: a ledger page reading “You owe $3,208.74 in September”, with settled, due and late entries." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Billwise — Every bill, set in order" />
+    <meta name="twitter:description" content="What you owe, what falls due, and what's settled — a private ledger for every bill." />
+    <meta name="twitter:image" content="%VITE_SITE_URL%/og-image.png" />
+
+    <!-- Icons & install -->
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Billwise" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <script>
+      // Apply the saved theme before first paint so there is no flash.
+      (function () {
+        try {
+          var d = JSON.parse(localStorage.getItem('billwise:v1') || 'null');
+          var t = (d && d.settings && d.settings.theme) || 'system';
+          if (t === 'system') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          document.documentElement.dataset.theme = t;
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', t === 'light' ? '#f2ede3' : '#16140f');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Billwise needs JavaScript enabled to run.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Direction 1 · Editorial Ledger — Billwise mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #f2ede3; --paper-2: #e9e2d4; --ink: #1b1916; --ink-2: #4a453d; --muted: #6b6358;
+    --rule: rgba(27, 25, 22, 0.16); --rule-strong: rgba(27, 25, 22, 0.55);
+    --verm: #b8432c; --olive: #56703f;
+    --serif: "Fraunces", Georgia, serif; --sans: "Instrument Sans", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: var(--sans); color: var(--ink); background: #d8d4cc; }
+  .fig { font-family: var(--serif); font-variant-numeric: lining-nums tabular-nums; font-optical-sizing: auto; }
+  .sc { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; color: var(--muted); }
+
+  /* ---------- Board ---------- */
+  .board { width: 2360px; padding: 56px 64px 64px; }
+  .board-head { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1.2fr; gap: 48px; align-items: end; margin-bottom: 40px; color: #2a2723; }
+  .board-head h1 { font-family: var(--serif); font-weight: 400; font-size: 54px; letter-spacing: -0.02em; line-height: 1; }
+  .board-head h1 em { color: var(--verm); }
+  .board-head p { margin-top: 12px; font-size: 16px; line-height: 1.5; color: #4a453d; max-width: 520px; }
+  .swatches { display: flex; gap: 14px; }
+  .sw { width: 92px; }
+  .sw i { display: block; height: 64px; border-radius: 4px; border: 1px solid rgba(0,0,0,.12); }
+  .sw b { display: block; margin-top: 8px; font-size: 13px; }
+  .sw span { font-size: 12px; color: #6b6358; font-family: ui-monospace, monospace; }
+  .type-spec .a { font-family: var(--serif); font-size: 44px; line-height: 1; font-weight: 400; }
+  .type-spec .a em { font-weight: 300; }
+  .type-spec .b { font-size: 15px; margin-top: 8px; color: #4a453d; }
+  .notes .sc { color: #6b6358; }
+  .notes ul { margin-top: 10px; padding-left: 18px; font-size: 14px; line-height: 1.55; color: #2a2723; }
+  .row { display: flex; gap: 56px; align-items: flex-start; }
+  .label { margin-bottom: 14px; font-size: 13px; color: #5d574e; letter-spacing: .04em; }
+
+  /* ---------- Desktop (paper) ---------- */
+  .desk { width: 1280px; height: 860px; background: var(--paper); border-radius: 10px; overflow: hidden; position: relative;
+          box-shadow: 0 40px 80px -30px rgba(0,0,0,.45), 0 0 0 1px rgba(0,0,0,.06); padding: 0 44px; }
+  .mast { height: 76px; display: flex; align-items: center; gap: 40px; }
+  .wm { font-family: var(--serif); font-style: italic; font-size: 30px; font-weight: 500; letter-spacing: -0.02em; }
+  .wm-sub { display: block; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); font-style: normal; font-family: var(--sans); font-weight: 600; margin-top: 2px; }
+  .mast nav { display: flex; gap: 28px; margin-left: 24px; font-size: 14px; color: var(--ink-2); }
+  .mast nav a.on { color: var(--ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--ink); padding-bottom: 6px; margin-bottom: -8px; }
+  .mast-r { margin-left: auto; display: flex; align-items: center; gap: 18px; }
+  .month { display: flex; align-items: center; gap: 12px; font-size: 15px; }
+  .month b { font-family: var(--serif); font-weight: 500; font-size: 18px; }
+  .chev { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--rule-strong); border-radius: 50%; }
+  .btn-ink { background: var(--ink); color: var(--paper); font: 600 14px var(--sans); padding: 11px 18px; border-radius: 3px; display: inline-flex; gap: 8px; align-items: center; }
+  .dbl { height: 6px; border-top: 1.5px solid var(--ink); border-bottom: 0.75px solid var(--ink); }
+
+  .hero { display: grid; grid-template-columns: 1.55fr 1fr; gap: 48px; padding: 24px 0 22px; border-bottom: 1px solid var(--rule-strong); }
+  .hero h2 { font-family: var(--serif); font-weight: 350; font-size: 60px; line-height: 0.98; letter-spacing: -0.03em; margin-top: 14px; font-variation-settings: "opsz" 144; }
+  .hero h2 .fig { font-weight: 500; }
+  .hero h2 em { font-weight: 300; }
+  .deck { margin-top: 16px; font-family: var(--serif); font-style: italic; font-size: 21px; line-height: 1.4; color: var(--ink-2); max-width: 620px; font-weight: 350; }
+  .deck .late { color: var(--verm); }
+  .brief { border-left: 1px solid var(--rule); padding-left: 36px; }
+  .brief .line { display: flex; align-items: baseline; padding: 7px 0; border-bottom: 1px dotted var(--rule-strong); font-size: 15px; }
+  .brief .line .fig { margin-left: auto; font-size: 24px; font-weight: 450; }
+  .brief .line.late { color: var(--verm); }
+  .split { display: flex; height: 10px; margin: 18px 0 8px; }
+  .split .p { background: var(--olive); }
+  .split .u { flex: 1; background: repeating-linear-gradient(135deg, var(--ink) 0 1.2px, transparent 1.2px 4px); border: 1px solid var(--ink); border-left: 0; }
+  .split-cap { display: flex; justify-content: space-between; }
+
+  .cols { display: grid; grid-template-columns: 1.3fr 1fr 0.95fr; }
+  .col { padding: 22px 30px 0; border-left: 1px solid var(--rule); }
+  .col:first-child { padding-left: 0; border-left: 0; }
+  .col h3 { font-family: var(--serif); font-weight: 500; font-size: 22px; letter-spacing: -0.01em; display: flex; align-items: baseline; gap: 10px; }
+  .col h3 .sc { font-family: var(--sans); font-size: 10px; }
+  .sec { margin-top: 14px; }
+  .sec > .sc { display: block; padding-bottom: 4px; border-bottom: 1px solid var(--rule-strong); }
+  .sec > .sc.v { color: var(--verm); }
+  .lr { display: grid; grid-template-columns: 44px 1fr auto 22px; gap: 12px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--rule); }
+  .lr .d { text-align: center; line-height: 1; }
+  .lr .d b { font-family: var(--serif); font-size: 24px; font-weight: 400; display: block; }
+  .lr .d span { font-size: 9px; letter-spacing: .16em; font-weight: 600; color: var(--muted); }
+  .lr .n { font-size: 15px; font-weight: 500; }
+  .lr .m { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .lr .a { font-size: 18px; font-weight: 450; }
+  .box { width: 18px; height: 18px; border: 1.5px solid var(--ink); border-radius: 2px; }
+  .lr.late .n, .lr.late .a, .lr.late .m { color: var(--verm); }
+  .lr.late .box { border-color: var(--verm); }
+  .lr.done .n { text-decoration: line-through; text-decoration-thickness: 1px; color: var(--muted); }
+  .lr.done .a { color: var(--muted); }
+  .lr.done .box { background: var(--olive); border-color: var(--olive); position: relative; }
+  .lr.done .box::after { content: ""; position: absolute; left: 5px; top: 1px; width: 5px; height: 10px; border: solid var(--paper); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+
+  .cat { padding: 7px 0 6px; border-bottom: 1px solid var(--rule); }
+  .cat .t { display: flex; align-items: baseline; font-size: 14px; }
+  .cat .t .fig { margin-left: auto; font-size: 17px; }
+  .cat .t .pc { width: 44px; text-align: right; font-size: 12px; color: var(--muted); }
+  .cat .bar { height: 3px; margin-top: 7px; background: var(--paper-2); }
+  .cat .bar i { display: block; height: 100%; background: var(--ink); }
+  .foot { margin-top: 14px; font-family: var(--serif); font-style: italic; font-size: 15px; color: var(--ink-2); }
+
+  .chart { display: flex; align-items: flex-end; gap: 7px; height: 150px; margin-top: 18px; border-bottom: 1px solid var(--ink); }
+  .chart div { flex: 1; background: var(--ink); position: relative; }
+  .chart div.now { background: repeating-linear-gradient(135deg, var(--ink) 0 1.2px, transparent 1.2px 4px); border: 1.5px solid var(--verm); }
+  .chart div.now span { position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); font-size: 10px; letter-spacing: .1em; color: var(--verm); font-weight: 600; white-space: nowrap; }
+  .xl { display: flex; gap: 7px; margin-top: 6px; }
+  .xl span { flex: 1; text-align: center; font-size: 10px; color: var(--muted); letter-spacing: .06em; }
+  .xl span.now { color: var(--verm); font-weight: 600; }
+  figure { margin-top: 18px; }
+  figcaption { font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--muted); margin-top: 4px; text-align: center; }
+
+  /* ---------- Phones ---------- */
+  .phone { width: 390px; height: 844px; border-radius: 48px; overflow: hidden; position: relative;
+           box-shadow: 0 40px 80px -30px rgba(0,0,0,.5), 0 0 0 10px #111, 0 0 0 11px #333; }
+  .sb { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 6px 30px 0; font: 600 15px var(--sans); }
+  .island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 120px; height: 34px; background: #000; border-radius: 20px; }
+
+  /* Ink (dark) edition */
+  .ink { background: #16140f; color: #ede6d8; --rule: rgba(237,230,216,.14); --rule-strong: rgba(237,230,216,.4); --muted: #a39a8a; --verm: #e0694f; --olive: #9db57f; }
+  .ink .p-head { display: flex; align-items: center; padding: 6px 22px 0; }
+  .ink .p-head .wm { font-size: 26px; }
+  .ink .sq { margin-left: auto; width: 40px; height: 40px; border: 1.5px solid #ede6d8; display: grid; place-items: center; border-radius: 3px; }
+  .mstrip { display: flex; gap: 22px; padding: 18px 22px 0; border-bottom: 1px solid var(--rule); font-size: 14px; color: var(--muted); white-space: nowrap; overflow: hidden; }
+  .mstrip span { padding-bottom: 10px; }
+  .mstrip .on { color: #ede6d8; font-family: var(--serif); font-style: italic; font-size: 17px; box-shadow: inset 0 -2px 0 var(--verm); }
+  .big { padding: 22px 22px 18px; }
+  .big .fig { font-size: 58px; font-weight: 400; letter-spacing: -0.03em; line-height: 1; margin-top: 8px; display: block; }
+  .big .split { margin: 16px 0 8px; }
+  .big .split .u { background: repeating-linear-gradient(135deg, #ede6d8 0 1.2px, transparent 1.2px 4px); border-color: #ede6d8; }
+  .big .cap { font-size: 13px; color: var(--muted); }
+  .big .cap b { color: #ede6d8; font-weight: 500; }
+  .notice { margin: 0 22px; padding: 12px 14px; border-left: 2px solid var(--verm); background: rgba(224,105,79,.08); display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .notice em { font-family: var(--serif); color: var(--verm); }
+  .notice u { margin-left: auto; font-weight: 600; text-underline-offset: 3px; }
+  .plist { padding: 16px 22px 0; }
+  .plist .lr { grid-template-columns: 40px 1fr auto 20px; }
+  .plist .box { border-color: #ede6d8; }
+  .swipe { position: relative; margin: 0 -22px; overflow: hidden; }
+  .swipe .under { position: absolute; inset: 0; background: var(--olive); color: #16140f; display: flex; align-items: center; padding-left: 22px; gap: 8px; font-weight: 600; font-size: 14px; }
+  .swipe .lr { position: relative; background: #16140f; transform: translateX(84px); padding-left: 22px; padding-right: 22px; }
+  .tabs { position: absolute; bottom: 0; left: 0; right: 0; height: 84px; border-top: 1px solid var(--rule); display: flex; justify-content: space-around; padding-top: 14px; background: #16140f; }
+  .tabs span { font-size: 10px; letter-spacing: .16em; font-weight: 600; text-transform: uppercase; color: var(--muted); text-align: center; }
+  .tabs span.on { color: #ede6d8; }
+  .tabs span.on::before { content: ""; display: block; width: 5px; height: 5px; border-radius: 50%; background: var(--verm); margin: 0 auto 6px; }
+
+  /* Paper welcome */
+  .paperp { background: var(--paper); }
+  .welcome { padding: 0 28px; }
+  .welcome h2 { font-family: var(--serif); font-weight: 350; font-size: 46px; line-height: 1; letter-spacing: -0.03em; margin-top: 12px; }
+  .welcome h2 em { font-weight: 300; color: var(--verm); }
+  .welcome .deck { font-size: 18px; margin-top: 14px; }
+  .welcome .btn-ink { width: 100%; justify-content: center; padding: 16px; font-size: 16px; margin-top: 26px; }
+  .welcome .link { display: block; text-align: center; margin-top: 16px; font-size: 15px; text-decoration: underline; text-underline-offset: 4px; }
+  .welcome .fn { text-align: center; margin-top: 26px; }
+</style>
+</head>
+<body>
+<div class="board">
+  <!-- Shared engraving: envelopes, wax seal and pen -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <pattern id="hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="4" stroke="#1b1916" stroke-width="0.9" /></pattern>
+      <pattern id="hatch2" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)"><line x1="0" y1="0" x2="0" y2="6" stroke="#1b1916" stroke-width="0.7" /></pattern>
+      <symbol id="engraving" viewBox="0 0 320 230">
+        <g fill="none" stroke="#1b1916" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round">
+          <g transform="rotate(-7 150 120)">
+            <rect x="34" y="52" width="210" height="132" fill="#f2ede3" />
+            <path d="M34 184 L118 118 M244 184 L160 118" />
+            <path d="M34 52 L139 128 L244 52" fill="url(#hatch2)" />
+          </g>
+          <g transform="rotate(5 170 130)">
+            <rect x="66" y="72" width="216" height="136" fill="#f2ede3" />
+            <path d="M66 208 L154 142 L282 208" fill="url(#hatch)" opacity=".55" />
+            <path d="M66 72 L174 150 L282 72" fill="#f2ede3" />
+            <rect x="236" y="84" width="34" height="40" stroke-dasharray="2 2" />
+            <rect x="241" y="89" width="24" height="30" fill="url(#hatch)" />
+            <circle cx="222" cy="112" r="17" stroke-width="1" />
+            <circle cx="222" cy="112" r="12" stroke-width=".8" />
+            <path d="M190 104 q8 -5 16 0 t16 0 M186 114 q8 -5 16 0 t16 0 M190 124 q8 -5 16 0 t16 0" stroke-width=".9" />
+            <circle cx="174" cy="150" r="15" fill="#b8432c" stroke="#7a2a1b" />
+            <text x="174" y="156" text-anchor="middle" font-family="Fraunces, serif" font-style="italic" font-size="17" fill="#f2ede3" stroke="none">B</text>
+          </g>
+          <g transform="rotate(-32 90 190)">
+            <path d="M-4 186 L150 186 L160 192 L150 198 L-4 198 Z" fill="url(#hatch)" />
+            <path d="M-4 186 L-4 198" />
+            <path d="M160 192 L196 192" stroke-width="1" />
+            <path d="M160 185 Q182 188 200 192 Q182 196 160 199 Z" fill="#f2ede3" />
+            <path d="M172 192 L198 192" stroke-width=".8" />
+            <circle cx="178" cy="192" r="1.6" fill="#1b1916" />
+            <path d="M120 186 L120 198 M126 186 L126 198" stroke-width="1" />
+          </g>
+        </g>
+      </symbol>
+    </defs>
+  </svg>
+
+  <header class="board-head">
+    <div>
+      <h1>Direction 1 · <em>Editorial Ledger</em></h1>
+      <p>A beautifully typeset financial journal. Numbers are set like headlines, rules replace boxes, status is typography (strike-through for settled, vermilion for late), and engraved line art replaces stock icons.</p>
+    </div>
+    <div class="swatches">
+      <div class="sw"><i style="background:#f2ede3"></i><b>Paper</b><span>#F2EDE3</span></div>
+      <div class="sw"><i style="background:#1b1916"></i><b>Ink</b><span>#1B1916</span></div>
+      <div class="sw"><i style="background:#b8432c"></i><b>Vermilion</b><span>#B8432C</span></div>
+      <div class="sw"><i style="background:#56703f"></i><b>Olive</b><span>#56703F</span></div>
+    </div>
+    <div class="type-spec">
+      <div class="a">Fraunces <em>Italic</em> $3,208</div>
+      <div class="b">Instrument Sans for interface text · 4 colors total, categories carry no color</div>
+    </div>
+    <div class="notes">
+      <span class="sc">Motion concept</span>
+      <ul>
+        <li>Figures “set” like type: digits drop into place one column at a time.</li>
+        <li>Marking paid draws a pen-stroke through the row, which then slides into “Settled”.</li>
+        <li>Rules draw left→right on first load only; no repeated fade-ups.</li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="row">
+    <!-- ================= DESKTOP ================= -->
+    <div>
+      <div class="label">Desktop · Overview (paper edition)</div>
+      <div class="desk">
+        <div class="mast">
+          <div><span class="wm">Billwise</span><span class="wm-sub">A private ledger</span></div>
+          <nav><a class="on">Overview</a><a>Bills</a><a>Calendar</a><a>Settings</a></nav>
+          <div class="mast-r">
+            <div class="month"><span class="chev">‹</span><span><b>September</b> 2026</span><span class="chev">›</span></div>
+            <span class="btn-ink">+ Enter a bill</span>
+          </div>
+        </div>
+        <div class="dbl"></div>
+
+        <section class="hero">
+          <div>
+            <span class="sc">No. 09 — Sunday, 27 September 2026</span>
+            <h2>You owe <span class="fig">$3,208.74</span> <em>in September.</em></h2>
+            <p class="deck">Nine of twelve bills are settled. <span class="late">One is two days late</span>; the rest can wait until Wednesday.</p>
+          </div>
+          <div class="brief">
+            <span class="sc">The month in figures</span>
+            <div class="line"><span>Settled</span><span class="fig">$3,051.76</span></div>
+            <div class="line"><span>Outstanding</span><span class="fig">$156.98</span></div>
+            <div class="line"><span>Due within seven days</span><span class="fig">$2,236.98</span></div>
+            <div class="line late"><span>Late</span><span class="fig">$65.00</span></div>
+            <div class="split"><div class="p" style="width:95%"></div><div class="u"></div></div>
+            <div class="split-cap"><span class="sc">95% settled</span><span class="sc">5% open</span></div>
+          </div>
+        </section>
+
+        <section class="cols">
+          <div class="col">
+            <h3>Coming due <span class="sc">6 entries</span></h3>
+            <div class="sec">
+              <span class="sc v">Late</span>
+              <div class="lr late"><div class="d"><b class="fig">25</b><span>FRI</span></div><div><div class="n">Mobile phone</div><div class="m">Phone &amp; internet · two days late</div></div><div class="a fig">$65.00</div><div class="box"></div></div>
+            </div>
+            <div class="sec">
+              <span class="sc">This week</span>
+              <div class="lr"><div class="d"><b class="fig">28</b><span>MON</span></div><div><div class="n">Internet</div><div class="m">Autopay · tomorrow</div></div><div class="a fig">$79.99</div><div class="box"></div></div>
+              <div class="lr"><div class="d"><b class="fig">30</b><span>WED</span></div><div><div class="n">Spotify</div><div class="m">Subscriptions</div></div><div class="a fig">$11.99</div><div class="box"></div></div>
+              <div class="lr"><div class="d"><b class="fig">01</b><span>THU</span></div><div><div class="n">Rent</div><div class="m">Housing · October</div></div><div class="a fig">$1,850.00</div><div class="box"></div></div>
+              <div class="lr"><div class="d"><b class="fig">02</b><span>FRI</span></div><div><div class="n">Credit card</div><div class="m">Loans &amp; cards</div></div><div class="a fig">$250.00</div><div class="box"></div></div>
+            </div>
+            <div class="sec">
+              <span class="sc">Settled this month</span>
+              <div class="lr done"><div class="d"><b class="fig">15</b><span>TUE</span></div><div><div class="n">Car loan</div><div class="m">Paid 13 Sep</div></div><div class="a fig">$389.42</div><div class="box"></div></div>
+            </div>
+          </div>
+
+          <div class="col">
+            <h3>Where it goes</h3>
+            <div class="sec">
+              <div class="cat"><div class="t"><span>Housing</span><span class="fig">$1,850.00</span><span class="pc">58%</span></div><div class="bar"><i style="width:58%"></i></div></div>
+              <div class="cat"><div class="t"><span>Loans &amp; cards</span><span class="fig">$849.42</span><span class="pc">26%</span></div><div class="bar"><i style="width:26%"></i></div></div>
+              <div class="cat"><div class="t"><span>Insurance</span><span class="fig">$160.68</span><span class="pc">5%</span></div><div class="bar"><i style="width:5%"></i></div></div>
+              <div class="cat"><div class="t"><span>Phone &amp; internet</span><span class="fig">$144.99</span><span class="pc">5%</span></div><div class="bar"><i style="width:4.5%"></i></div></div>
+              <div class="cat"><div class="t"><span>Utilities</span><span class="fig">$131.17</span><span class="pc">4%</span></div><div class="bar"><i style="width:4.1%"></i></div></div>
+              <div class="cat"><div class="t"><span>Health</span><span class="fig">$45.00</span><span class="pc">1%</span></div><div class="bar"><i style="width:1.4%"></i></div></div>
+              <div class="cat"><div class="t"><span>Subscriptions</span><span class="fig">$27.48</span><span class="pc">1%</span></div><div class="bar"><i style="width:.9%"></i></div></div>
+            </div>
+            <p class="foot">Housing is more than half the month — as it usually is.</p>
+          </div>
+
+          <div class="col">
+            <h3>Six months</h3>
+            <div class="chart">
+              <div style="height:84%"></div><div style="height:88%"></div><div style="height:86%"></div><div style="height:85%"></div><div style="height:89%"></div><div class="now" style="height:87%"><span>$3,209</span></div>
+            </div>
+            <div class="xl"><span>APR</span><span>MAY</span><span>JUN</span><span>JUL</span><span>AUG</span><span class="now">SEP</span></div>
+            <figure><svg width="100%" height="170"><use href="#engraving" /></svg><figcaption>Fig. 1 — The month, nearly settled.</figcaption></figure>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ================= PHONE · DASHBOARD (ink) ================= -->
+    <div>
+      <div class="label">Phone · Overview (ink edition)</div>
+      <div class="phone ink">
+        <div class="island"></div>
+        <div class="sb"><span>9:41</span><span>●●● ▮</span></div>
+        <div class="p-head"><span class="wm">Billwise</span><span class="sq">+</span></div>
+        <div class="mstrip"><span>July</span><span>August</span><span class="on">September</span><span>October</span><span>November</span></div>
+        <div class="big">
+          <span class="sc">Owed this month</span>
+          <span class="fig">$3,208.74</span>
+          <div class="split"><div class="p" style="width:95%"></div><div class="u"></div></div>
+          <div class="cap"><b>$3,051.76</b> settled · <b>$156.98</b> outstanding</div>
+        </div>
+        <div class="notice"><em>Mobile phone</em> is two days late · $65.00 <u>Settle</u></div>
+        <div class="plist">
+          <span class="sc">This week — swipe right to settle</span>
+          <div class="swipe"><div class="under">✓ Settle</div>
+            <div class="lr"><div class="d"><b class="fig">28</b><span>MON</span></div><div><div class="n">Internet</div><div class="m">Autopay · tomorrow</div></div><div class="a fig">$79.99</div><div class="box"></div></div>
+          </div>
+          <div class="lr"><div class="d"><b class="fig">30</b><span>WED</span></div><div><div class="n">Spotify</div><div class="m">Subscriptions</div></div><div class="a fig">$11.99</div><div class="box"></div></div>
+          <div class="lr"><div class="d"><b class="fig">01</b><span>THU</span></div><div><div class="n">Rent</div><div class="m">Housing</div></div><div class="a fig">$1,850.00</div><div class="box"></div></div>
+          <div class="lr"><div class="d"><b class="fig">02</b><span>FRI</span></div><div><div class="n">Credit card</div><div class="m">Loans &amp; cards</div></div><div class="a fig">$250.00</div><div class="box"></div></div>
+          <div class="lr"><div class="d"><b class="fig">03</b><span>SAT</span></div><div><div class="n">Gym</div><div class="m">Health · autopay</div></div><div class="a fig">$45.00</div><div class="box"></div></div>
+        </div>
+        <div class="tabs"><span class="on">Overview</span><span>Bills</span><span>Calendar</span><span>Settings</span></div>
+      </div>
+    </div>
+
+    <!-- ================= PHONE · WELCOME (paper) ================= -->
+    <div>
+      <div class="label">Phone · First visit</div>
+      <div class="phone paperp">
+        <div class="island"></div>
+        <div class="sb"><span>9:41</span><span>●●● ▮</span></div>
+        <div class="welcome">
+          <svg width="100%" height="300" style="margin-top:6px"><use href="#engraving" /></svg>
+          <span class="sc">Billwise — a private ledger</span>
+          <h2>Every bill, <em>set in order.</em></h2>
+          <p class="deck">Enter your bills once. Each month, Billwise tells you what's owed, what's due, and what's settled.</p>
+          <span class="btn-ink">Begin your ledger</span>
+          <a class="link">or browse a sample month →</a>
+          <p class="fn sc">Kept privately in this browser · No account</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
