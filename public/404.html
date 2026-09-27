@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Billwise</title>
+    <script>
+      // GitHub Pages serves this for any unknown path under the site. Billwise routes live after "#/",
+      // so send e.g. /billwise/Bills or /billwise/calendar/ to the matching page instead of an error.
+      (function () {
+        var routes = { bills: 1, calendar: 1, settings: 1, overview: 1 }
+        var parts = location.pathname.split('/').filter(Boolean)
+        // Project site: the first segment is the repository folder (e.g. "billwise"); keep its real casing.
+        var base = parts.length && !routes[parts[0].toLowerCase()] ? '/' + parts.shift() + '/' : '/'
+        var route = (parts[0] || '').toLowerCase().replace(/\.html?$/, '')
+        location.replace(base + (routes[route] && route !== 'overview' ? '#/' + route : '#/'))
+      })()
+    </script>
+    <style>
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f2ede3; color: #1b1916;
+             font: 17px Georgia, serif; text-align: center; }
+      a { color: #a53b26; }
+    </style>
+  </head>
+  <body>
+    <p>Taking you to Billwise… <a href="/billwise/">Open Billwise</a></p>
+  </body>
+</html>
