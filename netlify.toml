@@ -1,0 +1,29 @@
+# Netlify configuration. Deploys go out from this machine with `npm run deploy`
+# (build locally, then `netlify deploy --prod --dir dist`); headers below are applied by Netlify.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Hashed build assets never change, so browsers may keep them forever.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Font files are not content-hashed; cache for 30 days.
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    # The one inline script (theme bootstrap in index.html) is allowed by hash.
+    # scripts/check-csp.mjs fails the deploy if that script changes without this hash being updated.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'sha256-10XWZ+jRLpoOwiXoHrBOPtzFCnVyXIaZ1ulCnd/PHeY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"

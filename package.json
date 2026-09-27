@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "brand": "node scripts/generate-brand.mjs",
     "review": "node scripts/review.mjs",
-    "fonts": "node scripts/subset-fonts.mjs"
+    "fonts": "node scripts/subset-fonts.mjs",
+    "deploy": "npm run build && node scripts/check-csp.mjs && netlify deploy --prod --dir dist"
   },
   "dependencies": {
     "date-fns": "^4.4.0",

@@ -41,11 +41,28 @@ npm run build      # type-check + production build into dist/
 npm run preview    # serve the production build
 ```
 
-`dist/` is a static site with hash routing and relative asset paths, so you can host it anywhere: Netlify, Vercel,
-GitHub Pages, S3 or a sub-folder.
+### Deploying (Netlify)
 
-Before deploying, set `VITE_SITE_URL` in `.env` (e.g. `VITE_SITE_URL=https://billwise.app`) so the social-share tags
-(`og:image`, `og:url`, `twitter:image`) become the absolute URLs that link-preview crawlers require.
+Live at **https://billwiseledger.com**. It's also served at https://billwiseledger.netlify.app, and `www` redirects to
+the apex domain. The project is linked to the Netlify project `billwiseledger` (`.netlify/state.json`, not committed).
+
+```bash
+npm run deploy     # build → verify the CSP covers every inline script → netlify deploy --prod
+```
+
+This needs the Netlify CLI (`npm install -g netlify-cli`) and a one-time `netlify login`.
+
+- **`netlify.toml`** sets the security headers and caching:
+  - A strict Content-Security-Policy that allows the single inline theme script by hash.
+  - `X-Frame-Options`, `Referrer-Policy` and `Permissions-Policy`.
+  - Immutable caching for hashed `/assets/*`, and 30 days for `/fonts/*`.
+
+  If you edit the inline script in `index.html`, `scripts/check-csp.mjs` fails the deploy and prints the new hash
+  to put in `netlify.toml`.
+- **`.env.production`** sets `VITE_SITE_URL=https://billwiseledger.com` for the absolute social-share URLs.
+- **`public/404.html` and `404.js`** send mistyped paths such as `/bills` or `/Calendar/` to the matching screen.
+- **DNS** is at GoDaddy: an `A` record for `@` → `75.2.60.5`, and a `CNAME` for `www` →
+  `billwiseledger.netlify.app`. Netlify issues and renews the HTTPS certificate automatically.
 
 ### Maintenance scripts
 
