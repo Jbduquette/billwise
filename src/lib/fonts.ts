@@ -11,7 +11,10 @@ const FACES: { family: string; file: string; style: 'normal' | 'italic'; weight:
 
 export function loadFonts() {
   if (typeof FontFace === 'undefined' || !document.fonts) return
+  let started = false
   const start = () => {
+    if (started) return
+    started = true
     for (const f of FACES) {
       const url = new URL(`fonts/${f.file}`, document.baseURI).href
       const face = new FontFace(f.family, `url("${url}") format("woff2")`, { style: f.style, weight: f.weight, display: 'swap' })
@@ -23,4 +26,6 @@ export function loadFonts() {
   }
   // Two frames: the first schedules after React's commit, the second runs after it has painted.
   requestAnimationFrame(() => requestAnimationFrame(start))
+  // Backup for tabs that never paint (opened in the background, some in-app browsers): frames don't fire there.
+  window.setTimeout(start, 400)
 }
