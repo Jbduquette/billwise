@@ -12,3 +12,16 @@ export function finishIntroSoon() {
     intro.done = true
   }, 1400)
 }
+
+/**
+ * Entries skipped in the last moment. A row that leaves an open list because it was skipped
+ * must not draw the "settled" pen-stroke on its way out; the row checks this set on exit.
+ */
+const recentSkips = new Set<string>()
+
+export function markRecentlySkipped(key: string) {
+  recentSkips.add(key)
+  window.setTimeout(() => recentSkips.delete(key), 2000)
+}
+
+export const wasRecentlySkipped = (key: string) => recentSkips.has(key)

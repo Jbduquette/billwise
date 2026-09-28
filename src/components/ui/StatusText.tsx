@@ -5,6 +5,8 @@ export function statusLabel(o: Pick<Occurrence, 'status' | 'daysUntil'>): string
   switch (o.status) {
     case 'paid':
       return 'Settled'
+    case 'skipped':
+      return 'Skipped'
     case 'overdue': {
       const d = -o.daysUntil
       return d === 1 ? '1 day late' : `${d} days late`
@@ -20,6 +22,7 @@ export function statusLabel(o: Pick<Occurrence, 'status' | 'daysUntil'>): string
 
 const TONE: Record<OccurrenceStatus, string> = {
   paid: 'text-olive',
+  skipped: 'text-muted',
   overdue: 'text-verm',
   'due-today': 'text-ink',
   'due-soon': 'text-ink-2',

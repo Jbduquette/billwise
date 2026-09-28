@@ -2,7 +2,7 @@ import { isCategoryId } from './categories'
 import { FREQUENCIES } from './dates'
 import { round2 } from './format'
 import { uid } from './id'
-import type { AppData, Bill, Frequency, Payment, Settings, ThemePref } from './types'
+import type { AppData, Bill, Frequency, Payment, Settings, Skip, ThemePref } from './types'
 
 export const STORAGE_KEY = 'billwise:v1'
 
@@ -22,7 +22,7 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
 }
 
-export const EMPTY_DATA: AppData = { version: 1, bills: [], payments: [], settings: DEFAULT_SETTINGS }
+export const EMPTY_DATA: AppData = { version: 1, bills: [], payments: [], skips: [], settings: DEFAULT_SETTINGS }
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/
 const isISO = (v: unknown): v is string => typeof v === 'string' && ISO.test(v) && !Number.isNaN(Date.parse(v))
@@ -67,6 +67,18 @@ function sanitizePayment(raw: unknown): Payment | null {
   }
 }
 
+function sanitizeSkip(raw: unknown): Skip | null {
+  if (!raw || typeof raw !== 'object') return null
+  const r = raw as Loose
+  if (typeof r.billId !== 'string' || !isISO(r.dueDate)) return null
+  return {
+    id: typeof r.id === 'string' && r.id ? r.id : uid(),
+    billId: r.billId,
+    dueDate: r.dueDate,
+    skippedOn: isISO(r.skippedOn) ? r.skippedOn : r.dueDate,
+  }
+}
+
 function sanitizeSettings(raw: unknown): Settings {
   const r = (raw && typeof raw === 'object' ? raw : {}) as Loose
   const days = num(r.dueSoonDays)
@@ -96,7 +108,16 @@ export function sanitize(raw: unknown): AppData | null {
       seen.add(k)
       return true
     })
-  return { version: 1, bills, payments, settings: sanitizeSettings(r.settings) }
+  // Skips arrived after the first release, so older data simply has none. A paid entry can't also be skipped.
+  const skipSeen = new Set<string>()
+  const skips = (Array.isArray(r.skips) ? r.skips : []).map(sanitizeSkip).filter((s): s is Skip => {
+    if (!s || !ids.has(s.billId)) return false
+    const k = `${s.billId}|${s.dueDate}`
+    if (seen.has(k) || skipSeen.has(k)) return false
+    skipSeen.add(k)
+    return true
+  })
+  return { version: 1, bills, payments, skips, settings: sanitizeSettings(r.settings) }
 }
 
 export function loadData(): AppData {

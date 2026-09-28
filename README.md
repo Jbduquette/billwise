@@ -6,6 +6,9 @@ A private ledger for your bills. Add your bills once and Billwise shows:
 - **What falls due**: late entries first, then your "due soon" window (3–14 days), then later
 - **What you've already paid**, including custom amounts and payment dates for variable bills
 - **What's still open**, as a month of entries you can filter by status, category and search
+- **Skip a bill** for one due date. It leaves what's owed without counting as paid. To skip, use the **Skip** button
+  on a row (on hover or keyboard focus), the details sheet, or swipe left on a phone. Undo it, restore it, or pay it
+  after all whenever you like
 
 It also has recurring schedules (weekly through yearly, plus one-time), autopay, a calendar, spending by category,
 a six-month trend, daily browser reminders, JSON backup/restore and CSV export.
@@ -107,6 +110,10 @@ scripts/        font subsetting, brand rendering, review boards
 - **Due dates.** Each is computed from the anchor (`start + n × period`). A bill due on the 31st lands on 28 February
   and returns to the 31st in March without drifting.
 - **Autopay.** Autopay bills are settled on their due date. If you reopen one afterwards, that choice sticks.
+- **Skips.** A skip marks one occurrence (`billId + dueDate`) as set aside. A skipped entry isn't counted in the
+  month's total, outstanding or settled figures, the category breakdown, the trend, "Coming due" or reminders. It is
+  reported on its own, as "Skipped · n not counted". An entry is paid, skipped or open, never two at once:
+  paying a skipped entry clears the skip, and autopay never settles a skipped one.
 
 ## Quality notes
 

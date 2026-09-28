@@ -22,15 +22,17 @@ export function OccurrenceSheet() {
     const bill = data.bills.find((b) => b.id === ref.billId)
     if (!bill) return null
     const payment = data.payments.find((p) => p.billId === bill.id && p.dueDate === ref.dueDate)
+    const skip = payment ? undefined : data.skips.find((s) => s.billId === bill.id && s.dueDate === ref.dueDate)
     const daysUntil = daysBetween(today, ref.dueDate)
     return {
       key: payKey(bill.id, ref.dueDate),
       bill,
       dueDate: ref.dueDate,
       payment,
+      skip,
       daysUntil,
       amount: payment?.amount ?? bill.amount,
-      status: statusFor(daysUntil, data.settings.dueSoonDays, !!payment),
+      status: statusFor(daysUntil, data.settings.dueSoonDays, !!payment, !!skip),
     }
   }, [ref, data, today])
 
@@ -47,7 +49,7 @@ export function OccurrenceSheet() {
       description={shown && `${category(shown.bill.category).label} · ${frequencyMeta(shown.bill.frequency).label.toLowerCase()}`}
       size="sm"
     >
-      {shown && <OccurrenceBody key={shown.key + (shown.payment?.id ?? '')} occ={shown} />}
+      {shown && <OccurrenceBody key={shown.key + (shown.payment?.id ?? '') + (shown.skip?.id ?? '')} occ={shown} />}
     </Sheet>
   )
 }
@@ -57,6 +59,7 @@ function OccurrenceBody({ occ }: { occ: Occurrence }) {
   const { today, closeOccurrence, openEditor } = useUI()
   const actions = useBillActions()
   const paid = occ.status === 'paid'
+  const skipped = occ.status === 'skipped'
   const late = occ.status === 'overdue'
   const [amount, setAmount] = useState(String(occ.payment?.amount ?? occ.bill.amount))
   const [paidOn, setPaidOn] = useState(occ.payment?.paidOn ?? today)
@@ -82,10 +85,17 @@ function OccurrenceBody({ occ }: { occ: Occurrence }) {
     <div className="space-y-6">
       <div className="border-y border-ink py-4">
         <div className="flex items-baseline justify-between gap-4">
-          <p className={`fig text-[2.5rem] leading-none ${late ? 'text-verm' : 'text-ink'}`}>{money(occ.amount)}</p>
+          <p className={`fig text-[2.5rem] leading-none ${late ? 'text-verm' : skipped ? 'text-muted line-through' : 'text-ink'}`}>
+            {money(occ.amount)}
+          </p>
           <StatusText occurrence={occ} />
         </div>
         <p className="mt-2 font-serif text-[15px] text-ink-2 italic">Due {fmtDate(occ.dueDate, 'EEEE, d MMMM yyyy')}</p>
+        {skipped && occ.skip && (
+          <p className="mt-2 text-sm text-ink-2">
+            Skipped on {fmtDate(occ.skip.skippedOn, 'd MMM')}. It isn't part of what you owe and doesn't count as paid.
+          </p>
+        )}
       </div>
 
       <dl className="grid grid-cols-2 gap-x-6 gap-y-3">
@@ -116,7 +126,7 @@ function OccurrenceBody({ occ }: { occ: Occurrence }) {
         }}
         noValidate
       >
-        <p className="font-serif text-[1.25rem] text-ink">{paid ? 'The payment' : 'Record the payment'}</p>
+        <p className="font-serif text-[1.25rem] text-ink">{paid ? 'The payment' : skipped ? 'Paid it after all?' : 'Record the payment'}</p>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label htmlFor={amountId} className="label">
@@ -163,6 +173,25 @@ function OccurrenceBody({ occ }: { occ: Occurrence }) {
           )}
         </div>
       </form>
+
+      {!paid && (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-rule pt-5">
+          <p className="min-w-0 flex-1 text-sm text-muted">
+            {skipped
+              ? 'Put it back into what you owe for this due date.'
+              : 'Not paying this one? Skipping removes it from what you owe. It won’t count as paid.'}
+          </p>
+          <Button
+            onClick={() => {
+              if (skipped) actions.unskip(occ)
+              else actions.skip(occ)
+              closeOccurrence()
+            }}
+          >
+            {skipped ? 'Restore this bill' : 'Skip this bill'}
+          </Button>
+        </div>
+      )}
 
       <button
         type="button"

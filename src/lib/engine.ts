@@ -1,7 +1,7 @@
 import { CATEGORIES } from './categories'
 import { addDaysISO, daysBetween, dueDatesInRange, frequencyMeta, monthEnd, monthStart, shiftMonth } from './dates'
 import { round2 } from './format'
-import type { AppData, Bill, CategoryId, Occurrence, OccurrenceStatus, Payment } from './types'
+import type { AppData, Bill, CategoryId, Occurrence, OccurrenceStatus, Payment, Skip } from './types'
 
 export const payKey = (billId: string, dueDate: string) => `${billId}|${dueDate}`
 
@@ -11,8 +11,15 @@ export function indexPayments(payments: Payment[]): Map<string, Payment> {
   return m
 }
 
-export function statusFor(daysUntil: number, dueSoonDays: number, paid: boolean): OccurrenceStatus {
+export function indexSkips(skips: Skip[]): Map<string, Skip> {
+  const m = new Map<string, Skip>()
+  for (const s of skips) m.set(payKey(s.billId, s.dueDate), s)
+  return m
+}
+
+export function statusFor(daysUntil: number, dueSoonDays: number, paid: boolean, skipped = false): OccurrenceStatus {
   if (paid) return 'paid'
+  if (skipped) return 'skipped'
   if (daysUntil < 0) return 'overdue'
   if (daysUntil === 0) return 'due-today'
   if (daysUntil <= dueSoonDays) return 'due-soon'
@@ -22,20 +29,23 @@ export function statusFor(daysUntil: number, dueSoonDays: number, paid: boolean)
 /** Every occurrence of every bill with a due date inside [from, to], sorted by due date. */
 export function occurrencesBetween(data: AppData, from: string, to: string, today: string): Occurrence[] {
   const pays = indexPayments(data.payments)
+  const skips = indexSkips(data.skips)
   const out: Occurrence[] = []
   for (const bill of data.bills) {
     for (const dueDate of dueDatesInRange(bill, from, to)) {
       const key = payKey(bill.id, dueDate)
       const payment = pays.get(key)
+      const skip = payment ? undefined : skips.get(key)
       const daysUntil = daysBetween(today, dueDate)
       out.push({
         key,
         bill,
         dueDate,
         payment,
+        skip,
         daysUntil,
         amount: payment ? payment.amount : bill.amount,
-        status: statusFor(daysUntil, data.settings.dueSoonDays, !!payment),
+        status: statusFor(daysUntil, data.settings.dueSoonDays, !!payment, !!skip),
       })
     }
   }
@@ -62,6 +72,9 @@ export interface Summary {
   paidCount: number
   unpaidCount: number
   overdueCount: number
+  /** Skipped entries are left out of every figure above; they are reported here instead. */
+  skipped: number
+  skippedCount: number
   byCategory: CategorySlice[]
 }
 
@@ -71,9 +84,16 @@ export function summarize(occs: Occurrence[]): Summary {
   let overdue = 0
   let paidCount = 0
   let overdueCount = 0
+  let skipped = 0
+  let skippedCount = 0
   const cat = new Map<CategoryId, CategorySlice>()
 
   for (const o of occs) {
+    if (o.status === 'skipped') {
+      skipped += o.amount
+      skippedCount++
+      continue
+    }
     total += o.amount
     if (o.status === 'paid') {
       paid += o.amount
@@ -93,10 +113,12 @@ export function summarize(occs: Occurrence[]): Summary {
     paid: round2(paid),
     unpaid: round2(total - paid),
     overdue: round2(overdue),
-    count: occs.length,
+    count: occs.length - skippedCount,
     paidCount,
-    unpaidCount: occs.length - paidCount,
+    unpaidCount: occs.length - skippedCount - paidCount,
     overdueCount,
+    skipped: round2(skipped),
+    skippedCount,
     // Fixed category order keeps chart adjacency (and therefore color separation) stable.
     byCategory: CATEGORIES.flatMap((c) => {
       const s = cat.get(c.id)
@@ -123,7 +145,7 @@ export function agenda(data: AppData, today: string, horizonDays = 30): Agenda {
     addDaysISO(today, Math.max(horizonDays, soonDays)),
     today,
   )
-  const open = occs.filter((o) => o.status !== 'paid')
+  const open = occs.filter((o) => o.status !== 'paid' && o.status !== 'skipped')
   return {
     overdue: open.filter((o) => o.status === 'overdue'),
     soon: open.filter((o) => o.status === 'due-today' || o.status === 'due-soon'),
@@ -151,7 +173,7 @@ export function monthlyTrend(data: AppData, endMonth: string, today: string, cou
   const idx = new Map(points.map((p, i) => [p.month.slice(0, 7), i]))
   for (const o of occs) {
     const p = points[idx.get(o.dueDate.slice(0, 7)) ?? -1]
-    if (!p) continue
+    if (!p || o.status === 'skipped') continue
     p.total += o.amount
     if (o.status === 'paid') p.paid += o.amount
     else p.unpaid += o.amount

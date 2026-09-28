@@ -81,5 +81,5 @@ export function buildSampleData(today: string, settings: Settings): AppData {
     })
   }
 
-  return { version: 1, bills, payments, settings }
+  return { version: 1, bills, payments, skips: [], settings }
 }

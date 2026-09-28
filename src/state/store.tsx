@@ -3,15 +3,17 @@ import { addDaysISO, dueDatesInRange } from '../lib/dates'
 import { payKey } from '../lib/engine'
 import { uid } from '../lib/id'
 import { EMPTY_DATA, STORAGE_KEY, loadData, sanitize, saveData } from '../lib/storage'
-import type { AppData, Bill, Payment, Settings } from '../lib/types'
+import type { AppData, Bill, Payment, Settings, Skip } from '../lib/types'
 
 export type Action =
   | { type: 'bill/add'; bill: Bill }
   | { type: 'bill/update'; bill: Bill }
   | { type: 'bill/delete'; id: string }
-  | { type: 'bill/restore'; bill: Bill; payments: Payment[] }
+  | { type: 'bill/restore'; bill: Bill; payments: Payment[]; skips: Skip[] }
   | { type: 'pay'; payment: Payment }
   | { type: 'unpay'; billId: string; dueDate: string }
+  | { type: 'skip'; skip: Skip }
+  | { type: 'unskip'; billId: string; dueDate: string }
   | { type: 'settings'; patch: Partial<Settings> }
   | { type: 'replace'; data: AppData }
   | { type: 'autopay'; today: string }
@@ -26,17 +28,15 @@ function reducer(state: AppData, action: Action): AppData {
 
     case 'bill/update': {
       const bill = action.bill
-      // Drop payments that no longer line up with the (possibly re-scheduled) bill.
-      const own = state.payments.filter((p) => p.billId === bill.id)
-      let valid = new Set<string>()
-      if (own.length) {
-        const dates = own.map((p) => p.dueDate).sort()
-        valid = new Set(dueDatesInRange(bill, dates[0], dates[dates.length - 1]))
-      }
+      // Drop payments and skips that no longer line up with the (possibly re-scheduled) bill.
+      const ownDates = [...state.payments, ...state.skips].filter((x) => x.billId === bill.id).map((x) => x.dueDate).sort()
+      const valid = ownDates.length ? new Set(dueDatesInRange(bill, ownDates[0], ownDates[ownDates.length - 1])) : new Set<string>()
+      const keep = (x: { billId: string; dueDate: string }) => x.billId !== bill.id || valid.has(x.dueDate)
       return {
         ...state,
         bills: state.bills.map((b) => (b.id === bill.id ? bill : b)),
-        payments: state.payments.filter((p) => p.billId !== bill.id || valid.has(p.dueDate)),
+        payments: state.payments.filter(keep),
+        skips: state.skips.filter(keep),
       }
     }
 
@@ -45,17 +45,25 @@ function reducer(state: AppData, action: Action): AppData {
         ...state,
         bills: state.bills.filter((b) => b.id !== action.id),
         payments: state.payments.filter((p) => p.billId !== action.id),
+        skips: state.skips.filter((s) => s.billId !== action.id),
       }
 
     case 'bill/restore':
       if (state.bills.some((b) => b.id === action.bill.id)) return state
-      return { ...state, bills: [...state.bills, action.bill], payments: [...state.payments, ...action.payments] }
+      return {
+        ...state,
+        bills: [...state.bills, action.bill],
+        payments: [...state.payments, ...action.payments],
+        skips: [...state.skips, ...action.skips],
+      }
 
     case 'pay': {
+      // Paying an entry supersedes any skip on it.
       const k = payKey(action.payment.billId, action.payment.dueDate)
       return {
         ...state,
         payments: [...state.payments.filter((p) => payKey(p.billId, p.dueDate) !== k), action.payment],
+        skips: state.skips.filter((s) => payKey(s.billId, s.dueDate) !== k),
       }
     }
 
@@ -63,6 +71,22 @@ function reducer(state: AppData, action: Action): AppData {
       return {
         ...state,
         payments: state.payments.filter((p) => !(p.billId === action.billId && p.dueDate === action.dueDate)),
+      }
+
+    case 'skip': {
+      // Skipping an entry supersedes any payment on it: it simply leaves the month.
+      const k = payKey(action.skip.billId, action.skip.dueDate)
+      return {
+        ...state,
+        skips: [...state.skips.filter((s) => payKey(s.billId, s.dueDate) !== k), action.skip],
+        payments: state.payments.filter((p) => payKey(p.billId, p.dueDate) !== k),
+      }
+    }
+
+    case 'unskip':
+      return {
+        ...state,
+        skips: state.skips.filter((s) => !(s.billId === action.billId && s.dueDate === action.dueDate)),
       }
 
     case 'settings':
@@ -73,7 +97,8 @@ function reducer(state: AppData, action: Action): AppData {
 
     case 'autopay': {
       const { today } = action
-      const have = new Set(state.payments.map((p) => payKey(p.billId, p.dueDate)))
+      // Autopay never settles an entry that has been paid or deliberately skipped.
+      const have = new Set([...state.payments, ...state.skips].map((x) => payKey(x.billId, x.dueDate)))
       const added: Payment[] = []
       let touched = false
       const floor = addDaysISO(today, -AUTOPAY_LOOKBACK_DAYS)

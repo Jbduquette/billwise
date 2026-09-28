@@ -169,7 +169,7 @@ export function Settings() {
             <Button onClick={() => exportBillsCsv(data, today)} disabled={!data.bills.length}>
               Bills as a spreadsheet (CSV)
             </Button>
-            <Button onClick={() => exportPaymentsCsv(data, today)} disabled={!data.payments.length}>
+            <Button onClick={() => exportPaymentsCsv(data, today)} disabled={!data.payments.length && !data.skips.length}>
               Payment history (CSV)
             </Button>
           </div>

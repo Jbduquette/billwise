@@ -1,11 +1,20 @@
 import { useMemo } from 'react'
+import { fmtDate } from '../lib/dates'
 import { round2 } from '../lib/format'
 import { uid } from '../lib/id'
+import { markRecentlySkipped } from '../lib/motion'
 import type { Bill, Occurrence } from '../lib/types'
 import { useMoney } from '../hooks/useMoney'
-import { useStore } from './store'
+import { useStore, type Action } from './store'
 import { useToast } from './toast'
 import { useUI } from './ui'
+
+/** The action that puts an entry back exactly as it was (paid, skipped, or open). */
+function restoreAction(o: Occurrence): Action {
+  if (o.payment) return { type: 'pay', payment: o.payment }
+  if (o.skip) return { type: 'skip', skip: o.skip }
+  return { type: 'unskip', billId: o.bill.id, dueDate: o.dueDate }
+}
 
 /** User-facing mutations, each with feedback and an undo path. */
 export function useBillActions() {
@@ -13,7 +22,7 @@ export function useBillActions() {
   const toast = useToast()
   const { today, confirm } = useUI()
   const { money } = useMoney()
-  const payments = data.payments
+  const { payments, skips } = data
 
   return useMemo(
     () => ({
@@ -27,8 +36,10 @@ export function useBillActions() {
         toast(`${o.bill.name} ${prev ? 'amended' : 'settled'} · ${money(amount)}`, {
           action: {
             label: 'Undo',
-            onClick: () =>
-              prev ? dispatch({ type: 'pay', payment: prev }) : dispatch({ type: 'unpay', billId: o.bill.id, dueDate: o.dueDate }),
+            onClick: () => {
+              if (!prev) dispatch({ type: 'unpay', billId: o.bill.id, dueDate: o.dueDate })
+              dispatch(restoreAction(o))
+            },
           },
         })
       },
@@ -40,6 +51,34 @@ export function useBillActions() {
         toast(`${o.bill.name} reopened`, {
           tone: 'info',
           action: { label: 'Undo', onClick: () => dispatch({ type: 'pay', payment: prev }) },
+        })
+      },
+
+      /** Take one entry out of what's owed without it counting as paid. */
+      skip(o: Occurrence) {
+        if (o.skip) return
+        markRecentlySkipped(o.key)
+        dispatch({ type: 'skip', skip: { id: uid(), billId: o.bill.id, dueDate: o.dueDate, skippedOn: today } })
+        toast(`${o.bill.name} skipped for ${fmtDate(o.dueDate, 'd MMM')} · ${money(o.bill.amount)} no longer owed`, {
+          tone: 'info',
+          action: {
+            label: 'Undo',
+            onClick: () => {
+              dispatch({ type: 'unskip', billId: o.bill.id, dueDate: o.dueDate })
+              if (o.payment) dispatch({ type: 'pay', payment: o.payment })
+            },
+          },
+        })
+      },
+
+      /** Put a skipped entry back into what's owed. */
+      unskip(o: Occurrence) {
+        const prev = o.skip
+        if (!prev) return
+        dispatch({ type: 'unskip', billId: o.bill.id, dueDate: o.dueDate })
+        toast(`${o.bill.name} restored · ${money(o.bill.amount)} owed again`, {
+          tone: 'info',
+          action: { label: 'Undo', onClick: () => dispatch({ type: 'skip', skip: prev }) },
         })
       },
 
@@ -58,14 +97,15 @@ export function useBillActions() {
         })
         if (!ok) return false
         const history = payments.filter((p) => p.billId === bill.id)
+        const skipped = skips.filter((s) => s.billId === bill.id)
         dispatch({ type: 'bill/delete', id: bill.id })
         toast(`${bill.name} struck from the ledger`, {
           tone: 'info',
-          action: { label: 'Undo', onClick: () => dispatch({ type: 'bill/restore', bill, payments: history }) },
+          action: { label: 'Undo', onClick: () => dispatch({ type: 'bill/restore', bill, payments: history, skips: skipped }) },
         })
         return true
       },
     }),
-    [payments, dispatch, toast, today, money, confirm],
+    [payments, skips, dispatch, toast, today, money, confirm],
   )
 }

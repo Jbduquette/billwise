@@ -52,21 +52,17 @@ export function exportBillsCsv(data: AppData, today: string) {
 
 export function exportPaymentsCsv(data: AppData, today: string) {
   const names = new Map(data.bills.map((b) => [b.id, b]))
+  // Payments and skips together, newest due date first. Skipped entries carry no amount.
+  const entries = [
+    ...data.payments.map((p) => ({ billId: p.billId, dueDate: p.dueDate, on: p.paidOn, amount: p.amount.toFixed(2), how: p.auto ? 'Autopay' : 'Manual' })),
+    ...data.skips.map((s) => ({ billId: s.billId, dueDate: s.dueDate, on: s.skippedOn, amount: '', how: 'Skipped' })),
+  ].sort((a, b) => b.dueDate.localeCompare(a.dueDate))
   const rows = [
-    ['Bill', 'Category', 'Due date', 'Paid on', 'Amount', 'Method'],
-    ...[...data.payments]
-      .sort((a, b) => b.dueDate.localeCompare(a.dueDate))
-      .map((p) => {
-        const bill = names.get(p.billId)
-        return [
-          bill?.name ?? 'Deleted bill',
-          bill ? category(bill.category).label : '',
-          p.dueDate,
-          p.paidOn,
-          p.amount.toFixed(2),
-          p.auto ? 'Autopay' : 'Manual',
-        ]
-      }),
+    ['Bill', 'Category', 'Due date', 'Paid or skipped on', 'Amount', 'Method'],
+    ...entries.map((e) => {
+      const bill = names.get(e.billId)
+      return [bill?.name ?? 'Deleted bill', bill ? category(bill.category).label : '', e.dueDate, e.on, e.amount, e.how]
+    }),
   ]
   download(`billwise-payments-${stamp(today)}.csv`, '﻿' + toCsv(rows), 'text/csv;charset=utf-8')
 }

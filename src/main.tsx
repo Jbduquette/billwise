@@ -34,7 +34,7 @@ async function devSetup() {
   const settings = { ...DEFAULT_SETTINGS, theme: theme === 'light' || theme === 'dark' ? theme : DEFAULT_SETTINGS.theme }
   // ?demo=empty reviews the first-visit screen.
   window.__billwiseDemo =
-    params.get('demo') === 'empty' ? { version: 1, bills: [], payments: [], settings } : buildSampleData(todayISO(), settings)
+    params.get('demo') === 'empty' ? { version: 1, bills: [], payments: [], skips: [], settings } : buildSampleData(todayISO(), settings)
   document.documentElement.dataset.theme = settings.theme === 'dark' ? 'dark' : 'light'
 }
 

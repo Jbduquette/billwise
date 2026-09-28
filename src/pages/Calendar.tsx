@@ -17,9 +17,19 @@ import { useUI } from '../state/ui'
 
 /** Entry styling in the grid: late in vermilion, settled struck through, the rest in ink. */
 const entryTone = (o: Occurrence) =>
-  o.status === 'overdue' ? 'text-verm' : o.status === 'paid' ? 'text-muted line-through decoration-muted' : 'text-ink'
+  o.status === 'overdue'
+    ? 'text-verm'
+    : o.status === 'paid'
+      ? 'text-muted line-through decoration-muted'
+      : o.status === 'skipped'
+        ? 'text-muted italic'
+        : 'text-ink'
 
-const markTone = (o: Occurrence) => (o.status === 'overdue' ? 'bg-verm' : o.status === 'paid' ? 'bg-olive' : 'bg-ink')
+const markTone = (o: Occurrence) =>
+  o.status === 'overdue' ? 'bg-verm' : o.status === 'paid' ? 'bg-olive' : o.status === 'skipped' ? 'bg-control' : 'bg-ink'
+
+/** Skipped entries still show on their day, but aren't part of what's owed. */
+const counted = (l: Occurrence[]) => l.filter((o) => o.status !== 'skipped')
 
 export function Calendar() {
   const { data } = useStore()
@@ -78,7 +88,7 @@ export function Calendar() {
   const monthOccs = useMemo(() => [...byDay.entries()].filter(([d]) => inMonth(d)).flatMap(([, l]) => l), [byDay, month])
   const summary = summarize(monthOccs)
   const dayOccs = byDay.get(selected) ?? []
-  const dayTotal = dayOccs.reduce((s, o) => s + o.amount, 0)
+  const dayTotal = counted(dayOccs).reduce((s, o) => s + o.amount, 0)
   const weekdays = days.slice(0, 7)
 
   return (
@@ -121,11 +131,14 @@ export function Calendar() {
                 const outside = !inMonth(d)
                 const isToday = d === today
                 const isSel = d === selected
-                const total = list.reduce((s, o) => s + o.amount, 0)
+                const total = counted(list).reduce((s, o) => s + o.amount, 0)
                 const late = list.filter((o) => o.status === 'overdue').length
+                const skippedN = list.length - counted(list).length
                 const label =
                   fmtDate(d, 'EEEE, MMMM d') +
-                  (list.length ? `: ${pluralize(list.length, 'bill')}, ${money(total)}${late ? `, ${late} late` : ''}` : ': no bills')
+                  (list.length
+                    ? `: ${pluralize(list.length, 'bill')}, ${money(total)}${late ? `, ${late} late` : ''}${skippedN ? `, ${skippedN} skipped` : ''}`
+                    : ': no bills')
                 return (
                   <div key={d} className="border-b border-rule">
                     <button
@@ -187,6 +200,9 @@ export function Calendar() {
             </li>
             <li className="inline-flex items-center gap-1.5">
               <span aria-hidden className="h-2.5 w-[3px] bg-olive" /> <span className="line-through">Settled</span>
+            </li>
+            <li className="inline-flex items-center gap-1.5 text-muted">
+              <span aria-hidden className="h-2.5 w-[3px] bg-control" /> <span className="italic">Skipped</span>
             </li>
             <li className="ml-auto hidden text-muted sm:block">Arrow keys move between days</li>
           </ul>

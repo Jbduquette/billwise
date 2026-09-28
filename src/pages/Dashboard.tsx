@@ -31,11 +31,16 @@ function whenPhrase(o: Occurrence) {
 
 /** The italic deck under the headline: the month summarised in one sentence. */
 function deck(summary: Summary, ag: Agenda): ReactNode {
-  if (!summary.count) return 'Nothing falls due this month.'
+  if (!summary.count && !summary.skippedCount) return 'Nothing falls due this month.'
+  const skippedNote = summary.skippedCount
+    ? `, and ${word(summary.skippedCount)} ${summary.skippedCount === 1 ? 'is' : 'are'} skipped`
+    : ''
   const settled =
-    summary.paidCount === summary.count
-      ? 'Every bill this month is settled.'
-      : `${cap(word(summary.paidCount))} of ${word(summary.count)} bills are settled.`
+    summary.count === 0
+      ? `Every bill this month is skipped.`
+      : summary.paidCount === summary.count
+        ? `Every bill this month is settled${skippedNote}.`
+        : `${cap(word(summary.paidCount))} of ${word(summary.count)} bills are settled${skippedNote}.`
   const lateN = ag.overdue.length
   const next = ag.soon[0] ?? ag.later[0]
   return (
@@ -71,6 +76,7 @@ export function Dashboard() {
   const settled = occs
     .filter((o) => o.status === 'paid')
     .sort((a, b) => (b.payment?.paidOn ?? '').localeCompare(a.payment?.paidOn ?? ''))
+  const skippedList = occs.filter((o) => o.status === 'skipped')
   const top = [...summary.byCategory].sort((a, b) => b.amount - a.amount)[0]
   const topShare = top && summary.total > 0 ? top.amount / summary.total : 0
 
@@ -101,6 +107,13 @@ export function Dashboard() {
             <Line label="Outstanding" value={<Figure value={summary.unpaid} format={money} />} />
             <Line label={`Due within ${data.settings.dueSoonDays} days`} value={<Figure value={soonTotal} format={money} />} />
             {lateTotal > 0 && <Line late label="Late" value={<Figure value={lateTotal} format={money} />} />}
+            {summary.skipped > 0 && (
+              <Line
+                muted
+                label={`Skipped · ${summary.skippedCount} not counted`}
+                value={<span className="fig line-through">{money(summary.skipped)}</span>}
+              />
+            )}
           </dl>
           <div className="mt-5">
             <SplitBar value={pct} label={`${Math.round(pct * 100)}% of ${monthName} settled`} />
@@ -112,7 +125,7 @@ export function Dashboard() {
       <div className="grid md:grid-cols-2 lg:grid-cols-[1.35fr_1fr_0.95fr]">
         <section className="pt-6 pb-8 md:col-span-2 lg:col-span-1 lg:pr-8" aria-labelledby="due-h">
           <ColumnHead id="due-h" title="Coming due" note={`${ag.overdue.length + ag.soon.length + ag.later.length} entries`} />
-          <ComingDue ag={ag} soonDays={data.settings.dueSoonDays} settled={settled} monthName={monthName} />
+          <ComingDue ag={ag} soonDays={data.settings.dueSoonDays} settled={settled} skipped={skippedList} monthName={monthName} />
         </section>
 
         <section className="border-t border-rule pt-6 pb-8 md:pr-8 lg:border-t-0 lg:border-l lg:px-8" aria-labelledby="where-h">
@@ -150,10 +163,10 @@ export function Dashboard() {
   )
 }
 
-function Line({ label, value, late }: { label: string; value: ReactNode; late?: boolean }) {
+function Line({ label, value, late, muted }: { label: string; value: ReactNode; late?: boolean; muted?: boolean }) {
   return (
-    <div className={cx('flex items-baseline border-b border-dotted border-rule-strong py-2.5', late && 'text-verm')}>
-      <dt className={cx('text-[15px]', late ? 'text-verm' : 'text-ink-2')}>{label}</dt>
+    <div className={cx('flex items-baseline border-b border-dotted border-rule-strong py-2.5', late && 'text-verm', muted && 'text-muted')}>
+      <dt className={cx('text-[15px]', late ? 'text-verm' : muted ? 'text-muted' : 'text-ink-2')}>{label}</dt>
       <dd className="ml-auto text-[1.5rem] leading-none">{value}</dd>
     </div>
   )
@@ -172,9 +185,20 @@ function ColumnHead({ id, title, note }: { id: string; title: string; note?: str
 
 const LATER_PREVIEW = 4
 
-function ComingDue({ ag, soonDays, settled, monthName }: { ag: Agenda; soonDays: number; settled: Occurrence[]; monthName: string }) {
+function ComingDue({
+  ag,
+  soonDays,
+  settled,
+  skipped,
+  monthName,
+}: {
+  ag: Agenda
+  soonDays: number
+  settled: Occurrence[]
+  skipped: Occurrence[]
+  monthName: string
+}) {
   const [allLater, setAllLater] = useState(false)
-  const [showSettled, setShowSettled] = useState(false)
   const later = allLater ? ag.later : ag.later.slice(0, LATER_PREVIEW)
   const nothing = !ag.overdue.length && !ag.soon.length && !ag.later.length
 
@@ -203,27 +227,35 @@ function ComingDue({ ag, soonDays, settled, monthName }: { ag: Agenda; soonDays:
           )}
         </AnimatePresence>
       )}
-      {settled.length > 0 && (
-        <div>
-          <button
-            type="button"
-            aria-expanded={showSettled}
-            onClick={() => setShowSettled((v) => !v)}
-            className="sc flex min-h-11 w-full items-center border-b border-rule-strong !text-olive"
-          >
-            Settled in {monthName} · {settled.length}
-            <span className="ml-auto !text-ink-2">{showSettled ? 'Hide' : 'Show'}</span>
-          </button>
-          {showSettled && (
-            <ul>
-              <AnimatePresence initial={false}>
-                {settled.map((o) => (
-                  <LedgerRow key={o.key} occurrence={o} />
-                ))}
-              </AnimatePresence>
-            </ul>
-          )}
-        </div>
+      <Collapsible title={`Settled in ${monthName}`} tone="olive" items={settled} />
+      <Collapsible title={`Skipped in ${monthName}`} items={skipped} />
+    </div>
+  )
+}
+
+/** A folded list under "Coming due": settled or skipped entries for the month, shown on request. */
+function Collapsible({ title, items, tone }: { title: string; items: Occurrence[]; tone?: 'olive' }) {
+  const [open, setOpen] = useState(false)
+  if (!items.length) return null
+  return (
+    <div>
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className={cx('sc flex min-h-11 w-full items-center border-b border-rule-strong', tone === 'olive' ? '!text-olive' : '!text-ink-2')}
+      >
+        {title} · {items.length}
+        <span className="ml-auto !text-ink-2">{open ? 'Hide' : 'Show'}</span>
+      </button>
+      {open && (
+        <ul>
+          <AnimatePresence initial={false}>
+            {items.map((o) => (
+              <LedgerRow key={o.key} occurrence={o} />
+            ))}
+          </AnimatePresence>
+        </ul>
       )}
     </div>
   )

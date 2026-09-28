@@ -19,7 +19,7 @@ import { useStore } from '../state/store'
 import { useUI } from '../state/ui'
 
 type Tab = 'month' | 'all'
-type StatusFilter = 'all' | 'open' | 'settled' | 'late'
+type StatusFilter = 'all' | 'open' | 'settled' | 'late' | 'skipped'
 
 function readQuery(): { cat: CategoryId | null } {
   const q = new URLSearchParams(window.location.hash.split('?')[1] ?? '')
@@ -27,8 +27,20 @@ function readQuery(): { cat: CategoryId | null } {
   return { cat: isCategoryId(cat) ? cat : null }
 }
 
-const matchStatus = (o: Occurrence, f: StatusFilter) =>
-  f === 'all' || (f === 'settled' ? o.status === 'paid' : f === 'late' ? o.status === 'overdue' : o.status !== 'paid')
+function matchStatus(o: Occurrence, f: StatusFilter) {
+  switch (f) {
+    case 'all':
+      return true
+    case 'settled':
+      return o.status === 'paid'
+    case 'late':
+      return o.status === 'overdue'
+    case 'skipped':
+      return o.status === 'skipped'
+    case 'open':
+      return o.status !== 'paid' && o.status !== 'skipped'
+  }
+}
 
 export function Bills() {
   const { data } = useStore()
@@ -94,6 +106,12 @@ export function Bills() {
           <Stat label="Outstanding" value={<Figure value={summary.unpaid} format={money} />} tone={summary.overdue ? 'text-verm' : undefined} />
         </dl>
       )}
+      {tab === 'month' && summary.skippedCount > 0 && (
+        <p className="border-b border-rule py-2.5 text-sm text-muted">
+          {pluralize(summary.skippedCount, 'bill')} skipped this month · <span className="fig line-through">{money(summary.skipped)}</span> not
+          counted in these figures.
+        </p>
+      )}
 
       <div className="flex flex-col gap-3 pt-5 md:flex-row md:items-end">
         <label className="relative block flex-1">
@@ -119,6 +137,7 @@ export function Bills() {
               { value: 'open', label: 'Open' },
               { value: 'settled', label: 'Settled' },
               { value: 'late', label: 'Late' },
+              { value: 'skipped', label: 'Skipped' },
             ]}
           />
         )}
@@ -228,8 +247,9 @@ function NoResults({
       Clear filters
     </Button>
   )
-  if (status === 'open' || status === 'late') {
-    return <EmptyState art="inkwell" title={status === 'late' ? 'Nothing is late' : 'Everything is settled'} action={clear} />
+  if (status === 'open' || status === 'late' || status === 'skipped') {
+    const title = status === 'late' ? 'Nothing is late' : status === 'skipped' ? 'Nothing skipped this month' : 'Everything is settled'
+    return <EmptyState art="inkwell" title={title} action={clear} />
   }
   return (
     <EmptyState title="No matching entries" action={clear}>

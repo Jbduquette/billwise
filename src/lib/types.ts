@@ -41,6 +41,17 @@ export interface Payment {
   auto?: boolean
 }
 
+/**
+ * One occurrence the user chose to skip: it leaves what's owed for that period and never
+ * counts as paid. An occurrence is either paid, skipped, or open — never two at once.
+ */
+export interface Skip {
+  id: string
+  billId: string
+  dueDate: string
+  skippedOn: string
+}
+
 export interface Settings {
   currency: string
   dueSoonDays: number
@@ -52,10 +63,11 @@ export interface AppData {
   version: 1
   bills: Bill[]
   payments: Payment[]
+  skips: Skip[]
   settings: Settings
 }
 
-export type OccurrenceStatus = 'paid' | 'overdue' | 'due-today' | 'due-soon' | 'upcoming'
+export type OccurrenceStatus = 'paid' | 'skipped' | 'overdue' | 'due-today' | 'due-soon' | 'upcoming'
 
 /** A bill instance on a specific due date — derived, never stored. */
 export interface Occurrence {
@@ -67,4 +79,5 @@ export interface Occurrence {
   /** Calendar days from today until due (negative when past due). */
   daysUntil: number
   payment?: Payment
+  skip?: Skip
 }
