@@ -4,7 +4,8 @@ import { BillEditor } from './components/BillEditor'
 import { ConfirmDialog } from './components/ConfirmDialog'
 import { Masthead, PhoneHeader, TabBar } from './components/layout/Shell'
 import { OccurrenceSheet } from './components/OccurrenceSheet'
-import { useBillNotifications } from './hooks/useBillNotifications'
+import { useAppBadge, useBillNotifications } from './hooks/useBillNotifications'
+import { useUpdateToast } from './hooks/usePwa'
 import { useHashRoute, type Route } from './hooks/useHashRoute'
 import { useThemeSync } from './hooks/useThemeSync'
 import { useToday } from './hooks/useToday'
@@ -54,12 +55,27 @@ export default function App() {
 
 function Root() {
   const { data, dispatch } = useStore()
-  const { today } = useUI()
+  const { today, openEditor } = useUI()
   const [route] = useHashRoute()
   const main = useRef<HTMLElement>(null)
 
   useThemeSync(data.settings.theme)
   useBillNotifications(data, today)
+  useAppBadge(data, today)
+  useUpdateToast()
+
+  // The "Add a bill" home-screen shortcut opens #/bills?add: open the editor, then tidy the address.
+  useEffect(() => {
+    const openFromShortcut = () => {
+      const [path, query] = window.location.hash.split('?')
+      if (query !== 'add') return
+      history.replaceState(null, '', path || '#/')
+      openEditor()
+    }
+    openFromShortcut()
+    window.addEventListener('hashchange', openFromShortcut)
+    return () => window.removeEventListener('hashchange', openFromShortcut)
+  }, [openEditor])
 
   // Apply autopay on launch and whenever the day rolls over.
   useEffect(() => {

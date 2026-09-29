@@ -17,6 +17,17 @@
   [headers.values]
     Cache-Control = "public, max-age=2592000"
 
+# The service worker and manifest must always be re-checked, or installed apps would miss new editions.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Cache-Control = "no-cache"
+
 [[headers]]
   for = "/*"
   [headers.values]

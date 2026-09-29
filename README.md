@@ -15,6 +15,32 @@ a six-month trend, daily browser reminders, JSON backup/restore and CSV export.
 
 All data stays in the browser's `localStorage`. There is no server, no account and no tracking.
 
+## The app
+
+Billwise installs as an app on phones and computers, straight from the site. There's no app store.
+
+- **Installing.** Settings → *The app* has an **Install app** button in Chrome and Edge (Android, Windows, macOS,
+  ChromeOS). On iPhone and iPad, open the site in Safari, tap **Share**, then **Add to Home Screen**. Any browser's
+  menu also offers "Install app" or "Add to Home screen".
+- **Offline.** A service worker keeps every file the app needs, so it opens instantly and works with no connection.
+- **Updates.** Each deploy ships a new edition. The app checks hourly and whenever it comes back into view, then
+  shows "A new edition of Billwise is ready · Reload". If that's dismissed, the update applies the next time the
+  app is opened.
+- **Home-screen shortcuts.** Long-press or right-click the icon for *Add a bill*, *Bills* and *Calendar*.
+- **Icon badge.** Where supported, the icon shows how many entries are late or due today.
+- **Reminders.** These are sent through the service worker, so they also work on Android. Like the site's
+  reminders, they only arrive while the app is open.
+- **Your ledger.** On Android and desktop the installed app shares the browser's ledger for billwiseledger.com. On
+  iPhone and iPad, the Home Screen app keeps its own ledger, separate from Safari's. To move your bills across,
+  export a backup in Safari and import it in the app.
+
+How it's built:
+
+- `pwa/service-worker.js` is a template.
+- At build time, `pwa/vite-plugin.mjs` fills in the file list and an edition hash, and writes it to `dist/sw.js`.
+- Registration, updates and the install prompt are handled in `src/lib/pwa.ts`.
+- The service worker only runs in production builds. Use `npm run build && npm run preview` to try it locally.
+
 ## Design: the Editorial Ledger
 
 - **Two editions.** Paper (light) and Ink (dark), switchable in Settings. The default follows the device setting.

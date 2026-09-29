@@ -4,6 +4,8 @@ import { Button } from '../components/ui/Button'
 import { Segmented } from '../components/ui/Segmented'
 import { Switch } from '../components/ui/Switch'
 import { notificationsSupported, requestNotificationPermission } from '../hooks/useBillNotifications'
+import { usePwa } from '../hooks/usePwa'
+import { isIOS, promptInstall } from '../lib/pwa'
 import { exportBillsCsv, exportJson, exportPaymentsCsv } from '../lib/exporters'
 import { CURRENCIES, pluralize } from '../lib/format'
 import { buildSampleData } from '../lib/sample'
@@ -151,6 +153,10 @@ export function Settings() {
           />
         </Section>
 
+        <Section title="The app" note="On this device">
+          <InstallApp />
+        </Section>
+
         <Section title="Your records" note="Kept in this browser only">
           <p className="mb-5 font-serif text-[1.0625rem] leading-relaxed text-ink-2 italic">
             Nothing here is sent to a server.{' '}
@@ -200,6 +206,47 @@ export function Settings() {
           Billwise · {pluralize(data.bills.length, 'bill')} · {pluralize(data.payments.length, 'payment')} recorded
         </p>
       </div>
+    </>
+  )
+}
+
+/** Install Billwise as an app: a button where the browser offers one, otherwise the steps for this device. */
+function InstallApp() {
+  const { installed, canInstall, justInstalled } = usePwa()
+  const toast = useToast()
+  const ios = isIOS()
+
+  const install = async () => {
+    const outcome = await promptInstall()
+    if (outcome === 'accepted') toast('Billwise is installed. Open it from your home screen or app list.')
+  }
+
+  const label = installed || justInstalled ? 'Installed on this device' : 'Install Billwise'
+  const hint = installed
+    ? 'It opens in its own window, works offline and updates itself. Late and due-today bills show as a count on its icon.'
+    : justInstalled
+      ? 'Open Billwise from your home screen, dock or Start menu. It shares this browser’s ledger.'
+      : canInstall
+        ? 'Open it from your home screen, dock or Start menu like any other app. It works offline and updates itself.'
+        : ios
+          ? 'In Safari, tap Share, then “Add to Home Screen”.'
+          : 'Use your browser’s menu: “Install app”, “Install Billwise” or “Add to Home screen”.'
+
+  return (
+    <>
+      <Row label={label} hint={hint}>
+        {!installed && canInstall && (
+          <Button variant="primary" onClick={install} className="w-full sm:w-auto">
+            Install app
+          </Button>
+        )}
+      </Row>
+      {ios && !installed && (
+        <p className="text-sm text-muted">
+          On iPhone and iPad the Home Screen app keeps its own ledger, separate from Safari’s. To bring your bills
+          across, export a backup below, then import it in the app.
+        </p>
+      )}
     </>
   )
 }
