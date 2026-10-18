@@ -42,7 +42,7 @@ const toDraft = (bill: Bill | null, today: string): Draft => ({
 })
 
 /** Accepts "1,234.50", "$45", "45." etc. */
-const parseAmount = (s: string) => Number(s.replace(/[^\d.-]/g, ''))
+export const parseAmount = (s: string) => Number(s.replace(/[^\d.-]/g, ''))
 
 function validate(d: Draft): Errors {
   const e: Errors = {}
@@ -59,7 +59,7 @@ function validate(d: Draft): Errors {
   return e
 }
 
-function currencySymbol(currency: string) {
+export function currencySymbol(currency: string) {
   try {
     return (
       new Intl.NumberFormat(undefined, { style: 'currency', currency }).formatToParts(0).find((p) => p.type === 'currency')
@@ -372,7 +372,7 @@ function BillForm({ bill, today }: { bill: Bill | null; today: string }) {
   )
 }
 
-function Field({ id, label, error, children }: { id: string; label: string; error?: string; children: ReactNode }) {
+export function Field({ id, label, error, children }: { id: string; label: string; error?: string; children: ReactNode }) {
   return (
     <div>
       <label htmlFor={id} className="label">

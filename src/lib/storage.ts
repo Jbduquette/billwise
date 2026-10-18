@@ -2,7 +2,7 @@ import { isCategoryId } from './categories'
 import { FREQUENCIES } from './dates'
 import { round2 } from './format'
 import { uid } from './id'
-import type { AppData, Bill, Frequency, Payment, Settings, Skip, ThemePref } from './types'
+import type { AppData, Bill, Frequency, IncomeSource, Payment, SetAside, Settings, Skip, ThemePref } from './types'
 
 export const STORAGE_KEY = 'billwise:v1'
 
@@ -22,7 +22,15 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
 }
 
-export const EMPTY_DATA: AppData = { version: 1, bills: [], payments: [], skips: [], settings: DEFAULT_SETTINGS }
+export const EMPTY_DATA: AppData = {
+  version: 1,
+  bills: [],
+  payments: [],
+  skips: [],
+  income: [],
+  setAsides: [],
+  settings: DEFAULT_SETTINGS,
+}
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/
 const isISO = (v: unknown): v is string => typeof v === 'string' && ISO.test(v) && !Number.isNaN(Date.parse(v))
@@ -79,6 +87,28 @@ function sanitizeSkip(raw: unknown): Skip | null {
   }
 }
 
+function sanitizeIncome(raw: unknown): IncomeSource | null {
+  if (!raw || typeof raw !== 'object') return null
+  const r = raw as Loose
+  const amount = num(r.amount)
+  if (typeof r.name !== 'string' || !r.name.trim() || !Number.isFinite(amount) || amount <= 0 || !isISO(r.date)) return null
+  return {
+    id: typeof r.id === 'string' && r.id ? r.id : uid(),
+    name: r.name.trim().slice(0, 80),
+    amount: round2(amount),
+    frequency: isFreq(r.frequency) ? r.frequency : 'monthly',
+    date: r.date,
+  }
+}
+
+function sanitizeSetAside(raw: unknown): SetAside | null {
+  if (!raw || typeof raw !== 'object') return null
+  const r = raw as Loose
+  const amount = num(r.amount)
+  if (typeof r.name !== 'string' || !r.name.trim() || !Number.isFinite(amount) || amount < 0) return null
+  return { id: typeof r.id === 'string' && r.id ? r.id : uid(), name: r.name.trim().slice(0, 80), amount: round2(amount) }
+}
+
 function sanitizeSettings(raw: unknown): Settings {
   const r = (raw && typeof raw === 'object' ? raw : {}) as Loose
   const days = num(r.dueSoonDays)
@@ -117,7 +147,10 @@ export function sanitize(raw: unknown): AppData | null {
     skipSeen.add(k)
     return true
   })
-  return { version: 1, bills, payments, skips, settings: sanitizeSettings(r.settings) }
+  // The budget arrived later still, so older data has no income or set-asides.
+  const income = (Array.isArray(r.income) ? r.income : []).map(sanitizeIncome).filter((x): x is IncomeSource => x !== null)
+  const setAsides = (Array.isArray(r.setAsides) ? r.setAsides : []).map(sanitizeSetAside).filter((x): x is SetAside => x !== null)
+  return { version: 1, bills, payments, skips, income, setAsides, settings: sanitizeSettings(r.settings) }
 }
 
 export function loadData(): AppData {

@@ -9,6 +9,7 @@ import { MonthStrip, MonthSwitcher } from '../ui/MonthSwitcher'
 export const NAV: { route: Route; label: string }[] = [
   { route: 'dashboard', label: 'Overview' },
   { route: 'bills', label: 'Bills' },
+  { route: 'budget', label: 'Budget' },
   { route: 'calendar', label: 'Calendar' },
   { route: 'settings', label: 'Settings' },
 ]

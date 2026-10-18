@@ -10,13 +10,15 @@ interface Props {
   slices: CategorySlice[]
   total: number
   onSelect?: (id: CategoryId) => void
+  /** What the percentages are shares of, for screen readers. */
+  shareOf?: string
 }
 
 /**
  * Where the month's money goes, as a typeset list: every line carries its
  * label, amount and share, with a hairline bar for scale. No color coding.
  */
-export function CategoryBars({ slices, total, onSelect }: Props) {
+export function CategoryBars({ slices, total, onSelect, shareOf = 'the month' }: Props) {
   const { money } = useMoney()
   const [drawIn] = useState(() => !intro.done)
   const sorted = [...slices].sort((a, b) => b.amount - a.amount)
@@ -32,7 +34,7 @@ export function CategoryBars({ slices, total, onSelect }: Props) {
             <button
               type="button"
               onClick={() => onSelect?.(s.id)}
-              aria-label={`${label}: ${money(s.amount)}, ${Math.round(pct)}% of the month. View these bills.`}
+              aria-label={`${label}: ${money(s.amount)}, ${Math.round(pct)}% of ${shareOf}. View these bills.`}
               className="group block w-full py-2.5 text-left"
             >
               <span className="flex items-baseline gap-3">

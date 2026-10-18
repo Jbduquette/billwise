@@ -19,14 +19,16 @@ import { UIProvider, useUI } from './state/ui'
 // The two possible first screens (Welcome, Overview) ship in the main bundle; the other pages load on
 // demand and prefetch when the browser is idle.
 const loadBills = () => import('./pages/Bills')
+const loadBudget = () => import('./pages/Budget')
 const loadCalendar = () => import('./pages/Calendar')
 const loadSettings = () => import('./pages/Settings')
 const Bills = lazy(() => loadBills().then((m) => ({ default: m.Bills })))
+const Budget = lazy(() => loadBudget().then((m) => ({ default: m.Budget })))
 const Calendar = lazy(() => loadCalendar().then((m) => ({ default: m.Calendar })))
 const Settings = lazy(() => loadSettings().then((m) => ({ default: m.Settings })))
 
 function prefetchPages() {
-  const run = () => void Promise.all([loadBills(), loadCalendar(), loadSettings()]).catch(() => {})
+  const run = () => void Promise.all([loadBills(), loadBudget(), loadCalendar(), loadSettings()]).catch(() => {})
   if ('requestIdleCallback' in window) window.requestIdleCallback(run, { timeout: 3000 })
   else setTimeout(run, 1500)
 }
@@ -34,6 +36,7 @@ function prefetchPages() {
 const TITLES: Record<Route, string> = {
   dashboard: 'Overview',
   bills: 'Bills',
+  budget: 'Budget',
   calendar: 'Calendar',
   settings: 'Settings',
 }
@@ -100,6 +103,8 @@ function Root() {
     <Welcome />
   ) : route === 'bills' ? (
     <Bills />
+  ) : route === 'budget' ? (
+    <Budget />
   ) : route === 'calendar' ? (
     <Calendar />
   ) : route === 'settings' ? (

@@ -52,6 +52,28 @@ export interface Skip {
   skippedOn: string
 }
 
+/**
+ * Money coming in (a paycheck, a pension, side work). Recurring sources follow the bill schedule
+ * rules, anchored on `date`, and the pattern runs both ways: any payday, past or next, sets it.
+ */
+export interface IncomeSource {
+  id: string
+  name: string
+  /** Take-home amount each time it arrives. */
+  amount: number
+  frequency: Frequency
+  /** One payday (yyyy-MM-dd); for a one-time source, the day it arrives. */
+  date: string
+}
+
+/** Money planned each month for things that aren't bills: groceries, fuel, savings. */
+export interface SetAside {
+  id: string
+  name: string
+  /** Per month. */
+  amount: number
+}
+
 export interface Settings {
   currency: string
   dueSoonDays: number
@@ -64,6 +86,8 @@ export interface AppData {
   bills: Bill[]
   payments: Payment[]
   skips: Skip[]
+  income: IncomeSource[]
+  setAsides: SetAside[]
   settings: Settings
 }
 

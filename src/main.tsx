@@ -23,12 +23,13 @@ async function devSetup() {
   if (params.has('static')) MotionGlobalConfig.skipAnimations = true
   // ?demo — review with the sample month held in memory (localStorage untouched); ?theme=light|dark picks the edition.
   if (!params.has('demo')) return
-  const [{ buildSampleData }, { DEFAULT_SETTINGS }, { todayISO }] = await Promise.all([
+  const [{ buildSampleData }, { DEFAULT_SETTINGS, EMPTY_DATA }, { todayISO }] = await Promise.all([
     import('./lib/sample'),
     import('./lib/storage'),
     import('./lib/dates'),
     // Warm the on-demand pages so review screenshots never catch a page mid-load.
     import('./pages/Bills'),
+    import('./pages/Budget'),
     import('./pages/Calendar'),
     import('./pages/Settings'),
   ])
@@ -36,7 +37,7 @@ async function devSetup() {
   const settings = { ...DEFAULT_SETTINGS, theme: theme === 'light' || theme === 'dark' ? theme : DEFAULT_SETTINGS.theme }
   // ?demo=empty reviews the first-visit screen.
   window.__billwiseDemo =
-    params.get('demo') === 'empty' ? { version: 1, bills: [], payments: [], skips: [], settings } : buildSampleData(todayISO(), settings)
+    params.get('demo') === 'empty' ? { ...EMPTY_DATA, settings } : buildSampleData(todayISO(), settings)
   document.documentElement.dataset.theme = settings.theme === 'dark' ? 'dark' : 'light'
 }
 

@@ -3,6 +3,7 @@ import { useMemo, useState, type ReactNode } from 'react'
 import { CategoryBars } from '../components/charts/CategoryBars'
 import { SplitBar } from '../components/charts/SplitBar'
 import { TrendBars } from '../components/charts/TrendBars'
+import { ColumnHead, FigureLine } from '../components/layout/Columns'
 import { LedgerRow } from '../components/LedgerRow'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Engraving } from '../components/ui/Engraving'
@@ -103,12 +104,12 @@ export function Dashboard() {
         <div className="lg:border-l lg:border-rule lg:pl-9">
           <p className="sc">The month in figures</p>
           <dl className="mt-1">
-            <Line label="Settled" value={<Figure value={summary.paid} format={money} />} />
-            <Line label="Outstanding" value={<Figure value={summary.unpaid} format={money} />} />
-            <Line label={`Due within ${data.settings.dueSoonDays} days`} value={<Figure value={soonTotal} format={money} />} />
-            {lateTotal > 0 && <Line late label="Late" value={<Figure value={lateTotal} format={money} />} />}
+            <FigureLine label="Settled" value={<Figure value={summary.paid} format={money} />} />
+            <FigureLine label="Outstanding" value={<Figure value={summary.unpaid} format={money} />} />
+            <FigureLine label={`Due within ${data.settings.dueSoonDays} days`} value={<Figure value={soonTotal} format={money} />} />
+            {lateTotal > 0 && <FigureLine late label="Late" value={<Figure value={lateTotal} format={money} />} />}
             {summary.skipped > 0 && (
-              <Line
+              <FigureLine
                 muted
                 label={`Skipped · ${summary.skippedCount} not counted`}
                 value={<span className="fig line-through">{money(summary.skipped)}</span>}
@@ -160,26 +161,6 @@ export function Dashboard() {
         </section>
       </div>
     </>
-  )
-}
-
-function Line({ label, value, late, muted }: { label: string; value: ReactNode; late?: boolean; muted?: boolean }) {
-  return (
-    <div className={cx('flex items-baseline border-b border-dotted border-rule-strong py-2.5', late && 'text-verm', muted && 'text-muted')}>
-      <dt className={cx('text-[15px]', late ? 'text-verm' : muted ? 'text-muted' : 'text-ink-2')}>{label}</dt>
-      <dd className="ml-auto text-[1.5rem] leading-none">{value}</dd>
-    </div>
-  )
-}
-
-function ColumnHead({ id, title, note }: { id: string; title: string; note?: string }) {
-  return (
-    <div className="mb-2 flex items-baseline gap-3">
-      <h2 id={id} className="font-serif text-[1.375rem] font-[450] tracking-[-0.01em] text-ink">
-        {title}
-      </h2>
-      {note && <span className="sc">{note}</span>}
-    </div>
   )
 }
 

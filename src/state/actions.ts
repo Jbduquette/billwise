@@ -3,11 +3,51 @@ import { fmtDate } from '../lib/dates'
 import { round2 } from '../lib/format'
 import { uid } from '../lib/id'
 import { markRecentlySkipped } from '../lib/motion'
-import type { Bill, Occurrence } from '../lib/types'
+import type { Bill, IncomeSource, Occurrence, SetAside } from '../lib/types'
 import { useMoney } from '../hooks/useMoney'
 import { useStore, type Action } from './store'
 import { useToast } from './toast'
 import { useUI } from './ui'
+
+/** Income and set-aside edits for the Budget page, each with feedback; deletes can be undone. */
+export function useBudgetActions() {
+  const { data, dispatch } = useStore()
+  const toast = useToast()
+  const { money } = useMoney()
+  const { income, setAsides } = data
+
+  return useMemo(
+    () => ({
+      saveIncome(source: IncomeSource) {
+        const isNew = !income.some((x) => x.id === source.id)
+        dispatch({ type: 'income/save', source })
+        toast(isNew ? `${source.name} added · ${money(source.amount)} each time` : `${source.name} amended`)
+      },
+      deleteIncome(source: IncomeSource) {
+        const index = income.findIndex((x) => x.id === source.id)
+        dispatch({ type: 'income/delete', id: source.id })
+        toast(`${source.name} removed from income`, {
+          tone: 'info',
+          action: { label: 'Undo', onClick: () => dispatch({ type: 'income/save', source, index }) },
+        })
+      },
+      saveSetAside(setAside: SetAside) {
+        const isNew = !setAsides.some((x) => x.id === setAside.id)
+        dispatch({ type: 'setAside/save', setAside })
+        toast(isNew ? `${money(setAside.amount)} a month set aside for ${setAside.name}` : `${setAside.name} amended`)
+      },
+      deleteSetAside(setAside: SetAside) {
+        const index = setAsides.findIndex((x) => x.id === setAside.id)
+        dispatch({ type: 'setAside/delete', id: setAside.id })
+        toast(`${setAside.name} removed · ${money(setAside.amount)} back in the month`, {
+          tone: 'info',
+          action: { label: 'Undo', onClick: () => dispatch({ type: 'setAside/save', setAside, index }) },
+        })
+      },
+    }),
+    [income, setAsides, dispatch, toast, money],
+  )
+}
 
 /** The action that puts an entry back exactly as it was (paid, skipped, or open). */
 function restoreAction(o: Occurrence): Action {

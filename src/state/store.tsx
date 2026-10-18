@@ -3,7 +3,7 @@ import { addDaysISO, dueDatesInRange } from '../lib/dates'
 import { payKey } from '../lib/engine'
 import { uid } from '../lib/id'
 import { EMPTY_DATA, STORAGE_KEY, loadData, sanitize, saveData } from '../lib/storage'
-import type { AppData, Bill, Payment, Settings, Skip } from '../lib/types'
+import type { AppData, Bill, IncomeSource, Payment, SetAside, Settings, Skip } from '../lib/types'
 
 export type Action =
   | { type: 'bill/add'; bill: Bill }
@@ -14,9 +14,20 @@ export type Action =
   | { type: 'unpay'; billId: string; dueDate: string }
   | { type: 'skip'; skip: Skip }
   | { type: 'unskip'; billId: string; dueDate: string }
+  | { type: 'income/save'; source: IncomeSource; index?: number }
+  | { type: 'income/delete'; id: string }
+  | { type: 'setAside/save'; setAside: SetAside; index?: number }
+  | { type: 'setAside/delete'; id: string }
   | { type: 'settings'; patch: Partial<Settings> }
   | { type: 'replace'; data: AppData }
   | { type: 'autopay'; today: string }
+
+/** Replace the item with the same id, or add it (at `index` when restoring after an undo). */
+function upsert<T extends { id: string }>(list: T[], item: T, index?: number): T[] {
+  if (list.some((x) => x.id === item.id)) return list.map((x) => (x.id === item.id ? item : x))
+  if (index == null) return [...list, item]
+  return [...list.slice(0, index), item, ...list.slice(index)]
+}
 
 /** Autopay never reaches further back than this, even for old start dates. */
 const AUTOPAY_LOOKBACK_DAYS = 366
@@ -88,6 +99,18 @@ function reducer(state: AppData, action: Action): AppData {
         ...state,
         skips: state.skips.filter((s) => !(s.billId === action.billId && s.dueDate === action.dueDate)),
       }
+
+    case 'income/save':
+      return { ...state, income: upsert(state.income, action.source, action.index) }
+
+    case 'income/delete':
+      return { ...state, income: state.income.filter((x) => x.id !== action.id) }
+
+    case 'setAside/save':
+      return { ...state, setAsides: upsert(state.setAsides, action.setAside, action.index) }
+
+    case 'setAside/delete':
+      return { ...state, setAsides: state.setAsides.filter((x) => x.id !== action.id) }
 
     case 'settings':
       return { ...state, settings: { ...state.settings, ...action.patch } }

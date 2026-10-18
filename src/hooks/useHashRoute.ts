@@ -1,11 +1,12 @@
 import { useCallback, useSyncExternalStore } from 'react'
 
-export type Route = 'dashboard' | 'bills' | 'calendar' | 'settings'
+export type Route = 'dashboard' | 'bills' | 'budget' | 'calendar' | 'settings'
 
 const ROUTES: Record<string, Route> = {
   '': 'dashboard',
   '/': 'dashboard',
   '/bills': 'bills',
+  '/budget': 'budget',
   '/calendar': 'calendar',
   '/settings': 'settings',
 }

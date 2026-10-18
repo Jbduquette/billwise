@@ -2,7 +2,7 @@ import { addMonths, startOfMonth } from 'date-fns'
 import { addDaysISO, dueDatesInRange, fromISO, toISO } from './dates'
 import { round2 } from './format'
 import { uid } from './id'
-import type { AppData, Bill, CategoryId, Frequency, Payment, Settings } from './types'
+import type { AppData, Bill, CategoryId, Frequency, IncomeSource, Payment, SetAside, Settings } from './types'
 
 interface Seed {
   name: string
@@ -81,5 +81,17 @@ export function buildSampleData(today: string, settings: Settings): AppData {
     })
   }
 
-  return { version: 1, bills, payments, skips: [], settings }
+  // A biweekly paycheck (next one in four days) plus a little side work, and a plan for the rest.
+  const income: IncomeSource[] = [
+    { id: uid(), name: 'Paycheck', amount: 2340, frequency: 'biweekly', date: addDaysISO(today, 4) },
+    { id: uid(), name: 'Side work', amount: 250, frequency: 'monthly', date: addDaysISO(today, 9) },
+  ]
+  const setAsides: SetAside[] = [
+    { id: uid(), name: 'Groceries', amount: 550 },
+    { id: uid(), name: 'Fuel', amount: 160 },
+    { id: uid(), name: 'Eating out', amount: 150 },
+    { id: uid(), name: 'Savings', amount: 400 },
+  ]
+
+  return { version: 1, bills, payments, skips: [], income, setAsides, settings }
 }

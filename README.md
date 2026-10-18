@@ -9,6 +9,10 @@ A private ledger for your bills. Add your bills once and Billwise shows:
 - **Skip a bill** for one due date. It leaves what's owed without counting as paid. To skip, use the **Skip** button
   on a row (on hover or keyboard focus), the details sheet, or swipe left on a phone. Undo it, restore it, or pay it
   after all whenever you like
+- **Budget around your bills.** Enter what comes in (a paycheck every two weeks, a monthly pension, a one-off) and
+  set money aside for what isn't a bill (groceries, fuel, savings). The Budget tab takes the month's bills straight
+  from the ledger and shows what's left or how far short the plan runs. It also looks six months ahead, so
+  three-paycheck months and heavy-bill months show up early
 
 It also has recurring schedules (weekly through yearly, plus one-time), autopay, a calendar, spending by category,
 a six-month trend, daily browser reminders, JSON backup/restore and CSV export.
@@ -26,7 +30,7 @@ Billwise installs as an app on phones and computers, straight from the site. The
 - **Updates.** Each deploy ships a new edition. The app checks hourly and whenever it comes back into view, then
   shows "A new edition of Billwise is ready · Reload". If that's dismissed, the update applies the next time the
   app is opened.
-- **Home-screen shortcuts.** Long-press or right-click the icon for *Add a bill*, *Bills* and *Calendar*.
+- **Home-screen shortcuts.** Long-press or right-click the icon for *Add a bill*, *Bills*, *Budget* and *Calendar*.
 - **Icon badge.** Where supported, the icon shows how many entries are late or due today.
 - **Reminders.** These are sent through the service worker, so they also work on Android. Like the site's
   reminders, they only arrive while the app is open.
@@ -117,12 +121,12 @@ React 19 · TypeScript · Vite · Tailwind CSS v4 · Motion · date-fns · lucid
 
 ```
 src/
-  lib/          pure logic: types, recurrence engine (dates.ts), totals & agenda (engine.ts),
+  lib/          pure logic: types, recurrence engine (dates.ts), totals & agenda (engine.ts), budget (budget.ts),
                 storage + validation, sample data, CSV/JSON export, font loading, motion constants
   state/        store (reducer + persistence + cross-tab sync), toasts, UI state, actions with undo
   hooks/        today (rolls over at midnight), routing, theme, notifications, media queries
-  components/   LedgerRow, sheets (bill editor, entry details), charts, masthead/tab bar, UI primitives
-  pages/        Dashboard (Overview), Bills, Calendar, Settings, Welcome
+  components/   LedgerRow, sheets (bill editor, budget editor, entry details), charts, masthead/tab bar, UI primitives
+  pages/        Dashboard (Overview), Bills, Budget, Calendar, Settings, Welcome
 scripts/        font subsetting, brand rendering, review boards
 ```
 
@@ -140,6 +144,14 @@ scripts/        font subsetting, brand rendering, review boards
   month's total, outstanding or settled figures, the category breakdown, the trend, "Coming due" or reminders. It is
   reported on its own, as "Skipped · n not counted". An entry is paid, skipped or open, never two at once:
   paying a skipped entry clears the skip, and autopay never settles a skipped one.
+- **Budget.** Left over = income − bills − set-asides, for the month in view.
+  - *Bills* is the same monthly total the Overview shows, so skipped entries are left out.
+  - *Income* counts the paydays that land in the month. A recurring source's pattern runs backwards and forwards
+    from the payday you enter, so a biweekly paycheck brings in two paydays most months and three in two months of
+    the year.
+  - *Set-asides* are flat monthly amounts.
+  - A *typical month* adds up each running bill's monthly equivalent. That's how the page spots a month made heavy
+    by a quarterly or yearly bill.
 
 ## Quality notes
 
@@ -156,7 +168,7 @@ Lighthouse 12, production build, first visit (median of 3 mobile runs):
   of variable fonts. Switching the fonts to `font-display: optional` would bring LCP to about 2 s, but first-time
   visitors would then see the fallback faces.
 - **Code splitting.** Only the two possible first screens (Welcome and Overview) are in the main bundle. Bills,
-  Calendar and Settings load on demand and prefetch when the browser is idle.
+  Budget, Calendar and Settings load on demand and prefetch when the browser is idle.
 - **Accessibility.**
   - Controls are labelled, focus is visible, dialogs trap focus, and touch targets are 44px.
   - Status is never shown by color alone, and the chart legends double as data tables.
