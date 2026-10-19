@@ -3,6 +3,7 @@ import { PageHeader } from '../components/layout/PageHeader'
 import { Button } from '../components/ui/Button'
 import { Segmented } from '../components/ui/Segmented'
 import { Switch } from '../components/ui/Switch'
+import { SyncPanel } from '../components/SyncPanel'
 import { notificationsSupported, requestNotificationPermission } from '../hooks/useBillNotifications'
 import { usePwa } from '../hooks/usePwa'
 import { isIOS, promptInstall } from '../lib/pwa'
@@ -10,8 +11,10 @@ import { exportBillsCsv, exportJson, exportPaymentsCsv } from '../lib/exporters'
 import { CURRENCIES, pluralize } from '../lib/format'
 import { buildSampleData } from '../lib/sample'
 import { EMPTY_DATA, sanitize } from '../lib/storage'
+import { syncAvailable } from '../lib/sync'
 import type { ThemePref } from '../lib/types'
 import { useStore } from '../state/store'
+import { useSync } from '../state/sync'
 import { useToast } from '../state/toast'
 import { useUI } from '../state/ui'
 
@@ -24,6 +27,7 @@ export function Settings() {
   const { data, dispatch, persisted } = useStore()
   const { today, confirm } = useUI()
   const toast = useToast()
+  const sync = useSync()
   const fileInput = useRef<HTMLInputElement>(null)
   const currencyId = useId()
   const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>(() =>
@@ -83,7 +87,9 @@ export function Settings() {
   const eraseAll = async () => {
     const ok = await confirm({
       title: 'Erase the whole ledger?',
-      message: 'Every bill, payment and setting will be permanently removed from this browser. This cannot be undone.',
+      message: sync.meta
+        ? 'Every bill, payment and setting will be permanently removed from this browser and from your synced ledger, so your other devices empty too. This cannot be undone.'
+        : 'Every bill, payment and setting will be permanently removed from this browser. This cannot be undone.',
       confirmLabel: 'Erase everything',
       tone: 'danger',
     })
@@ -153,13 +159,19 @@ export function Settings() {
           />
         </Section>
 
+        {syncAvailable && (
+          <Section title="Sync across devices" note="Optional">
+            <SyncPanel />
+          </Section>
+        )}
+
         <Section title="The app" note="On this device">
           <InstallApp />
         </Section>
 
-        <Section title="Your records" note="Kept in this browser only">
+        <Section title="Your records" note={sync.meta ? 'In this browser and your account' : 'Kept in this browser only'}>
           <p className="mb-5 font-serif text-[1.0625rem] leading-relaxed text-ink-2 italic">
-            Nothing here is sent to a server.{' '}
+            {sync.meta ? 'Your ledger is kept in this browser and synced to your Billwise account.' : 'Nothing here is sent to a server unless you turn on sync.'}{' '}
             {!persisted && (
               <strong className="font-sans text-[15px] font-semibold text-verm not-italic">
                 Your browser is blocking storage (private mode?), so changes won't be kept after this tab closes.

@@ -37,4 +37,4 @@
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
     # The one inline script (theme bootstrap in index.html) is allowed by hash.
     # scripts/check-csp.mjs fails the deploy if that script changes without this hash being updated.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'sha256-10XWZ+jRLpoOwiXoHrBOPtzFCnVyXIaZ1ulCnd/PHeY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'sha256-10XWZ+jRLpoOwiXoHrBOPtzFCnVyXIaZ1ulCnd/PHeY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://dadfbfwyutzumkwedcqd.supabase.co; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"

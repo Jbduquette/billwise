@@ -17,7 +17,34 @@ A private ledger for your bills. Add your bills once and Billwise shows:
 It also has recurring schedules (weekly through yearly, plus one-time), autopay, a calendar, spending by category,
 a six-month trend, daily browser reminders, JSON backup/restore and CSV export.
 
-All data stays in the browser's `localStorage`. There is no server, no account and no tracking.
+By default all data stays in the browser's `localStorage`: no account, no server and no tracking. Signing in to
+**sync** is optional (see below).
+
+## Sync across devices (optional, Supabase)
+
+Settings → *Sync across devices* signs in with an emailed one-time code (no password). Once signed in, the ledger
+is kept in step on every device that signs in to the same account.
+
+- **Storage.** One row per person in a Supabase table, `ledgers` (`user_id`, `data` jsonb, `revision`). Row-level
+  security means a signed-in person can only read or change their own row, and signed-out visitors get no access at
+  all. The schema is in [`supabase/schema.sql`](supabase/schema.sql).
+- **Offline first.** `localStorage` stays the working copy, so nothing changes offline. Edits save to the cloud
+  about a second after they're made. Other devices check for changes when the app comes back into view, when it
+  reconnects, and every 90 seconds while it's open.
+- **Conflicts.** Each save names the revision it started from. If another device saved first, the two copies are
+  merged by record id, so every bill, payment, skip, income and set-aside from both sides is kept. The catch: a
+  record deleted on one device and still present on another can come back.
+- **First sign-in on a device that already has a ledger.** You choose whether to use the account's ledger or merge
+  the two.
+- **Kept per device.** The reminders setting, which depends on each device's notification permission.
+- **Cost to visitors who don't sync.** The Supabase client (about 55 KB gzipped) is code-split and loads only for
+  people who sign in. The CSP allows connections to the project's URL only.
+- **Configuration.** The project URL and publishable key are in `.env`. The publishable key is public by design;
+  row-level security is what protects the data.
+- **Email.** `supabase/email-template.html` is the sign-in email, which carries a code and a link. The code matters
+  on iPhone, where the installed app and Safari keep separate storage.
+- **Testing.** `review/sync-test.mjs` (not committed) runs three "devices" against a fake Supabase in Node, through
+  a dev-only hook (`window.__billwiseFakeSupabase`) that production builds strip out.
 
 ## The app
 

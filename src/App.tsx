@@ -13,6 +13,7 @@ import { finishIntroSoon } from './lib/motion'
 import { Dashboard } from './pages/Dashboard'
 import { Welcome } from './pages/Welcome'
 import { StoreProvider, useStore } from './state/store'
+import { SyncProvider } from './state/sync'
 import { ToastProvider } from './state/toast'
 import { UIProvider, useUI } from './state/ui'
 
@@ -48,7 +49,9 @@ export default function App() {
       <StoreProvider>
         <ToastProvider>
           <UIProvider today={today}>
-            <Root />
+            <SyncProvider>
+              <Root />
+            </SyncProvider>
           </UIProvider>
         </ToastProvider>
       </StoreProvider>

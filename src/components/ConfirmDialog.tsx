@@ -13,7 +13,7 @@ export function ConfirmDialog() {
       footer={
         <>
           <Button className="flex-1 sm:flex-none" onClick={() => resolveConfirm(false)} data-autofocus>
-            Cancel
+            {confirmState?.cancelLabel ?? 'Cancel'}
           </Button>
           <Button
             variant={confirmState?.tone === 'danger' ? 'danger' : 'primary'}

@@ -6,6 +6,8 @@ export interface ConfirmOptions {
   title: string
   message?: string
   confirmLabel?: string
+  /** The other choice. Closing the dialog any other way picks it too, so it must be the safe one. */
+  cancelLabel?: string
   tone?: 'danger' | 'default'
 }
 
