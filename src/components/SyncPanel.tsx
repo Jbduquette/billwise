@@ -141,7 +141,7 @@ function EnterCode() {
           maxLength={10}
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          placeholder="123456"
+          placeholder="12345678"
           autoFocus
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-err` : undefined}
