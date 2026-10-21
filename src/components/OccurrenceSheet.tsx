@@ -8,6 +8,7 @@ import { useBillActions } from '../state/actions'
 import { useStore } from '../state/store'
 import { useUI } from '../state/ui'
 import { Button } from './ui/Button'
+import { DATE_PLACEHOLDER, DateField } from './ui/DateField'
 import { Sheet } from './ui/Sheet'
 import { StatusText } from './ui/StatusText'
 
@@ -74,7 +75,7 @@ function OccurrenceBody({ occ }: { occ: Occurrence }) {
       return
     }
     if (!paidOn) {
-      setError('Pick the date you paid.')
+      setError(`Enter the date you paid as ${DATE_PLACEHOLDER}.`)
       return
     }
     actions.markPaid(occ, { amount: n, paidOn })
@@ -149,7 +150,7 @@ function OccurrenceBody({ occ }: { occ: Occurrence }) {
             <label htmlFor={dateId} className="label">
               Paid on
             </label>
-            <input id={dateId} type="date" className="field" value={paidOn} onChange={(e) => setPaidOn(e.target.value)} />
+            <DateField id={dateId} value={paidOn} onChange={setPaidOn} />
           </div>
         </div>
         {error && (

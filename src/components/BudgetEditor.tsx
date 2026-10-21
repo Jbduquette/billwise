@@ -12,6 +12,7 @@ import { useBudgetActions } from '../state/actions'
 import { useUI } from '../state/ui'
 import { currencySymbol, Field, parseAmount } from './BillEditor'
 import { Button } from './ui/Button'
+import { DATE_PLACEHOLDER, DateField } from './ui/DateField'
 import { Sheet } from './ui/Sheet'
 
 export type BudgetEditing =
@@ -162,7 +163,7 @@ function IncomeForm({ item, onDone }: { item: IncomeSource | null; onDone: () =>
   const form = useFormState<'name' | 'amount' | 'date'>(() => ({
     name: name.trim() ? undefined : 'Give this income a name.',
     amount: amountError(amount, 'the take-home amount'),
-    date: date ? undefined : frequency === 'once' ? 'Pick the day it arrives.' : 'Pick a payday.',
+    date: date ? undefined : frequency === 'once' ? `Enter the day it arrives as ${DATE_PLACEHOLDER}.` : `Enter a payday as ${DATE_PLACEHOLDER}.`,
   }))
 
   const preview = useMemo(() => {
@@ -224,16 +225,14 @@ function IncomeForm({ item, onDone }: { item: IncomeSource | null; onDone: () =>
         </Field>
       </div>
       <Field id={ids.date} label={frequency === 'once' ? 'Day it arrives' : 'A payday'} error={form.show('date')}>
-        <input
+        <DateField
           id={ids.date}
-          data-field="date"
-          type="date"
-          className="field"
+          dataField="date"
           value={date}
-          onChange={(e) => setDate(e.target.value)}
+          onChange={setDate}
           onBlur={form.blur('date')}
-          aria-invalid={!!form.show('date')}
-          aria-describedby={form.show('date') ? `${ids.date}-err` : `${ids.date}-hint`}
+          invalid={!!form.show('date')}
+          describedBy={form.show('date') ? `${ids.date}-err` : `${ids.date}-hint`}
         />
         {!form.show('date') && frequency !== 'once' && (
           <p id={`${ids.date}-hint`} className="mt-1.5 text-[13px] text-muted">

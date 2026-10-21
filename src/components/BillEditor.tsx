@@ -12,6 +12,7 @@ import type { Bill, CategoryId, Frequency } from '../lib/types'
 import { useBillActions } from '../state/actions'
 import { useUI } from '../state/ui'
 import { Button } from './ui/Button'
+import { DATE_PLACEHOLDER, DateField } from './ui/DateField'
 import { Sheet } from './ui/Sheet'
 import { Switch } from './ui/Switch'
 
@@ -51,9 +52,9 @@ function validate(d: Draft): Errors {
   if (!d.amount.trim()) e.amount = 'Enter the amount due.'
   else if (!Number.isFinite(amt) || amt <= 0) e.amount = 'Amount must be a number greater than 0.'
   else if (amt > 10_000_000) e.amount = 'That amount looks too large.'
-  if (!d.startDate) e.startDate = 'Pick the first due date.'
+  if (!d.startDate) e.startDate = `Enter the first due date as ${DATE_PLACEHOLDER}.`
   if (d.hasEnd && d.frequency !== 'once') {
-    if (!d.endDate) e.endDate = 'Pick an end date or turn this off.'
+    if (!d.endDate) e.endDate = `Enter the last due date as ${DATE_PLACEHOLDER}, or turn this off.`
     else if (d.endDate < d.startDate) e.endDate = 'End date must be after the first due date.'
   }
   return e
@@ -269,16 +270,14 @@ function BillForm({ bill, today }: { bill: Bill | null; today: string }) {
           </select>
         </Field>
         <Field id={ids.start} label={draft.frequency === 'once' ? 'Due date' : 'First due date'} error={show('startDate')}>
-          <input
+          <DateField
             id={ids.start}
-            data-field="startDate"
-            type="date"
-            className="field"
+            dataField="startDate"
             value={draft.startDate}
-            onChange={(e) => set('startDate', e.target.value)}
+            onChange={(v) => set('startDate', v)}
             onBlur={blur('startDate')}
-            aria-invalid={!!show('startDate')}
-            aria-describedby={show('startDate') ? `${ids.start}-err` : undefined}
+            invalid={!!show('startDate')}
+            describedBy={show('startDate') ? `${ids.start}-err` : undefined}
           />
         </Field>
       </div>
@@ -302,17 +301,15 @@ function BillForm({ bill, today }: { bill: Bill | null; today: string }) {
               >
                 <div className="pt-1 pb-3">
                   <Field id={ids.end} label="Last due date" error={show('endDate')}>
-                    <input
+                    <DateField
                       id={ids.end}
-                      data-field="endDate"
-                      type="date"
-                      className="field"
+                      dataField="endDate"
                       min={draft.startDate}
                       value={draft.endDate}
-                      onChange={(e) => set('endDate', e.target.value)}
+                      onChange={(v) => set('endDate', v)}
                       onBlur={blur('endDate')}
-                      aria-invalid={!!show('endDate')}
-                      aria-describedby={show('endDate') ? `${ids.end}-err` : undefined}
+                      invalid={!!show('endDate')}
+                      describedBy={show('endDate') ? `${ids.end}-err` : undefined}
                     />
                   </Field>
                 </div>
