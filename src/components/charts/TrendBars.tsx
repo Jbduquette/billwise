@@ -16,7 +16,7 @@ const CHART_H = 150
 
 /**
  * Monthly totals as ink columns: settled in solid ink, outstanding hatched on
- * top. The month on view is outlined in vermilion. One axis, baseline at zero.
+ * top. The month on view is set in gold foil. One axis, baseline at zero.
  */
 export function TrendBars({ points, selected, onSelect }: Props) {
   const { money, compact } = useMoney()
@@ -55,13 +55,13 @@ export function TrendBars({ points, selected, onSelect }: Props) {
                 className="group flex w-full flex-col justify-end"
               >
                 <motion.span
-                  className={cx('flex w-full origin-bottom flex-col', isSel && 'outline outline-[1.5px] outline-offset-2 outline-verm')}
+                  className="flex w-full origin-bottom flex-col"
                   initial={drawIn ? { scaleY: 0 } : false}
                   animate={{ scaleY: 1 }}
                   transition={{ duration: 0.7, ease: EASE_OUT, delay: drawIn ? 0.25 + i * 0.04 : 0 }}
                 >
                   {p.unpaid > 0 && <span className="hatch block border border-b-0 border-ink text-ink" style={{ height: openH }} />}
-                  <span className="block bg-ink transition-opacity group-hover:opacity-80" style={{ height: paidH }} />
+                  <span className={cx('block transition-opacity group-hover:opacity-80', isSel ? 'foil-bg' : 'bg-ink')} style={{ height: paidH }} />
                 </motion.span>
               </button>
 
@@ -92,7 +92,7 @@ export function TrendBars({ points, selected, onSelect }: Props) {
       </ul>
       <div className="mt-1.5 flex gap-1.5" aria-hidden>
         {points.map((p) => (
-          <span key={p.month} className={cx('sc flex-1 text-center !text-[10px]', p.month === selected && '!text-verm')}>
+          <span key={p.month} className={cx('sc flex-1 text-center !text-[10px]', p.month === selected && '!text-ink')}>
             {fmtDate(p.month, 'MMM')}
           </span>
         ))}

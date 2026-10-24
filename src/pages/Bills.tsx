@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type ReactNode, type Ref } from 'react'
 import { PageHeader } from '../components/layout/PageHeader'
 import { LedgerRow } from '../components/LedgerRow'
 import { Button } from '../components/ui/Button'
+import { CategoryMark } from '../components/ui/CategoryMark'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Figure } from '../components/ui/Figure'
 import { Segmented } from '../components/ui/Segmented'
@@ -279,6 +280,7 @@ function BillRow({ bill, today, ref }: { bill: Bill; today: string; ref?: Ref<HT
         <span className="min-w-0 flex-1">
           <span className={cx('block truncate text-[15px] font-medium', next ? 'text-ink' : 'text-muted')}>{bill.name}</span>
           <span className="mt-0.5 block truncate text-[13px] text-muted">
+            <CategoryMark id={bill.category} className="mr-2 -mt-px" />
             {freq.label} · {category(bill.category).label}
             {bill.autopay && ' · Autopay'} · {next ? `next ${fmtDate(next, 'd MMM')}` : 'finished'}
           </span>

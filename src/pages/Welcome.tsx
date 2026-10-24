@@ -27,7 +27,7 @@ export function Welcome() {
         {/* The headline paints immediately (it is the page's largest element); the rest follows. */}
         <div className="order-2 lg:order-1">
           <p className="sc">Billwise — a private ledger</p>
-          <h1 className="mt-4 font-serif text-[2.9rem] leading-[0.98] font-[350] tracking-[-0.035em] text-balance text-ink sm:text-[4rem] lg:text-[4.75rem]">
+          <h1 className="press mt-4 font-serif text-[2.9rem] leading-[0.98] font-[350] tracking-[-0.035em] text-balance text-ink sm:text-[4rem] lg:text-[4.75rem]">
             Every bill, <em className="font-[300] text-verm">set in order.</em>
           </h1>
           <p className="mt-5 max-w-xl font-serif text-[1.25rem] leading-[1.45] font-[350] text-ink-2 italic">

@@ -1,7 +1,7 @@
 import { forwardRef, type ButtonHTMLAttributes } from 'react'
 import { cx } from '../../lib/cx'
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'foil'
 type Size = 'sm' | 'md' | 'lg'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -14,6 +14,7 @@ const VARIANTS: Record<Variant, string> = {
   secondary: 'border border-ink-2 text-ink hover:border-ink hover:bg-bg-2',
   ghost: 'text-ink-2 hover:bg-bg-2 hover:text-ink',
   danger: 'bg-verm text-on-ink hover:brightness-110',
+  foil: 'foil-bg text-[#241a08] shadow-[0_1px_0_rgba(255,255,255,0.4)_inset,0_6px_16px_-6px_rgba(0,0,0,0.5)] hover:brightness-110',
 }
 
 const SIZES: Record<Size, string> = {

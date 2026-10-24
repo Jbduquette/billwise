@@ -8,6 +8,7 @@ import { LedgerRow } from '../components/LedgerRow'
 import { EmptyState } from '../components/ui/EmptyState'
 import { Engraving } from '../components/ui/Engraving'
 import { Figure } from '../components/ui/Figure'
+import { Fleuron, MonthVignette } from '../components/ui/MonthVignette'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { useMoney } from '../hooks/useMoney'
 import { category } from '../lib/categories'
@@ -84,24 +85,24 @@ export function Dashboard() {
   return (
     <>
       {/* ---------- Hero ---------- */}
-      <section
-        className="grid gap-8 border-b border-rule-strong pt-6 pb-7 lg:grid-cols-[1.55fr_1fr] lg:gap-12 lg:pt-9 lg:pb-8"
-        aria-label={`${monthName} in brief`}
-      >
-        <div className="min-w-0">
-          <p className="sc">
-            No. {fmtDate(month, 'MM')} — {fmtDate(today, 'EEEE, d MMMM yyyy')}
-          </p>
-          <h1 className="mt-3 font-serif text-[2.6rem] leading-[1.02] font-[350] tracking-[-0.03em] text-ink sm:text-[3.4rem] lg:text-[3.85rem]">
-            {tense} <Figure value={summary.total} format={money} className="font-[500]" />{' '}
-            <em className="font-[300]">in {monthName}.</em>
-          </h1>
-          <p className="mt-4 max-w-[38rem] font-serif text-[1.1875rem] leading-[1.45] font-[350] text-ink-2 italic sm:text-[1.3125rem]">
-            {deck(summary, ag)}
-          </p>
+      <section className="grid gap-8 pt-6 lg:grid-cols-[1.55fr_1fr] lg:gap-10 lg:pt-9" aria-label={`${monthName} in brief`}>
+        <div className="min-w-0 xl:grid xl:grid-cols-[minmax(0,1fr)_9rem] xl:gap-4">
+          <div className="min-w-0">
+            <p className="sc">
+              No. {fmtDate(month, 'MM')} <span className="font-serif text-[15px] tracking-normal normal-case italic">— {fmtDate(today, 'EEEE, d MMMM yyyy')}</span>
+            </p>
+            <h1 className="press mt-3 font-serif text-[2.6rem] leading-[1.02] font-[350] tracking-[-0.03em] text-ink sm:text-[3.4rem] lg:text-[3.85rem]">
+              {tense} <Figure value={summary.total} format={money} className="font-[500]" foil />{' '}
+              <em className="font-[300]">in {monthName}.</em>
+            </h1>
+            <p className="dropcap mt-4 max-w-[38rem] font-serif text-[1.1875rem] leading-[1.45] font-[350] text-ink-2 italic sm:text-[1.3125rem]">
+              {deck(summary, ag)}
+            </p>
+          </div>
+          <MonthVignette month={month} className="hidden w-36 self-end justify-self-end opacity-90 xl:block" />
         </div>
 
-        <div className="lg:border-l lg:border-rule lg:pl-9">
+        <div className="card px-5 pt-4 pb-5 sm:px-6">
           <p className="sc">The month in figures</p>
           <dl className="mt-1">
             <FigureLine label="Settled" value={<Figure value={summary.paid} format={money} />} />
@@ -122,14 +123,16 @@ export function Dashboard() {
         </div>
       </section>
 
-      {/* ---------- Columns ---------- */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-[1.35fr_1fr_0.95fr]">
-        <section className="pt-6 pb-8 md:col-span-2 lg:col-span-1 lg:pr-8" aria-labelledby="due-h">
+      <Fleuron className="mt-9 mb-7" />
+
+      {/* ---------- Columns, each a card on the page ---------- */}
+      <div className="grid items-start gap-5 md:grid-cols-2 lg:grid-cols-[1.35fr_1fr_0.95fr] lg:gap-6">
+        <section className="md:card md:col-span-2 md:px-6 md:pt-5 md:pb-4 lg:col-span-1" aria-labelledby="due-h">
           <ColumnHead id="due-h" title="Coming due" note={`${ag.overdue.length + ag.soon.length + ag.later.length} entries`} />
           <ComingDue ag={ag} soonDays={data.settings.dueSoonDays} settled={settled} skipped={skippedList} monthName={monthName} />
         </section>
 
-        <section className="border-t border-rule pt-6 pb-8 md:pr-8 lg:border-t-0 lg:border-l lg:px-8" aria-labelledby="where-h">
+        <section className="border-t border-rule pt-6 md:card md:border-t md:px-6 md:pt-5 md:pb-5" aria-labelledby="where-h">
           <ColumnHead id="where-h" title="Where it goes" />
           {summary.byCategory.length ? (
             <>
@@ -149,7 +152,7 @@ export function Dashboard() {
           )}
         </section>
 
-        <section className="border-t border-rule pt-6 pb-8 md:border-l md:pl-8 lg:border-t-0" aria-labelledby="trend-h">
+        <section className="border-t border-rule pt-6 md:card md:border-t md:px-6 md:pt-5 md:pb-5" aria-labelledby="trend-h">
           <ColumnHead id="trend-h" title={`${trend.length} months`} note="Select one to view it" />
           <TrendBars points={trend} selected={month} onSelect={setMonth} />
           <figure className="mt-6 hidden lg:block">
@@ -256,8 +259,8 @@ function Group({
   children?: ReactNode
 }) {
   return (
-    // A group that empties waits for its last row's stroke, then folds away like a row.
-    <motion.div className="overflow-hidden" exit={{ opacity: 0, height: 0, transition: { delay: 0.45, duration: 0.3, ease: EASE_OUT } }}>
+    // A group that empties waits for its last row's stroke and stamp, then folds away like a row.
+    <motion.div className="overflow-hidden" exit={{ opacity: 0, height: 0, transition: { delay: 0.7, duration: 0.3, ease: EASE_OUT } }}>
       <p className={cx('sc border-b border-rule-strong pb-1.5', tone === 'late' && '!text-verm')}>{title}</p>
       <ul>
         {/* Sync mode: a settled row keeps its place while its stroke draws, then the list closes up.

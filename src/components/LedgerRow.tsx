@@ -1,14 +1,15 @@
-import { animate, motion, useIsPresent, useMotionValue, useTransform } from 'motion/react'
+import { AnimatePresence, animate, motion, useIsPresent, useMotionValue, useTransform } from 'motion/react'
 import { useRef, useState, type Ref } from 'react'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { useMoney } from '../hooks/useMoney'
 import { category } from '../lib/categories'
 import { cx } from '../lib/cx'
 import { fmtDate } from '../lib/dates'
-import { EASE_OUT, wasRecentlySkipped } from '../lib/motion'
+import { EASE_OUT, wasRecentlyPaid, wasRecentlySkipped } from '../lib/motion'
 import type { Occurrence } from '../lib/types'
 import { useBillActions } from '../state/actions'
 import { useUI } from '../state/ui'
+import { CategoryMark } from './ui/CategoryMark'
 import { LedgerBox } from './ui/LedgerBox'
 import { StatusText } from './ui/StatusText'
 
@@ -24,6 +25,35 @@ interface LedgerRowProps {
 /** Distance a row must travel before a swipe commits. */
 const SWIPE_COMMIT = 84
 
+/** Each stamp is pressed at its own slight angle, fixed per entry so it doesn't wander between renders. */
+function tiltFor(key: string) {
+  let h = 0
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) | 0
+  return -11 + (Math.abs(h) % 17)
+}
+
+/**
+ * A rubber stamp, inked in vermilion: PAID and the date. On wide screens it sits just left of the amount;
+ * on phones a smaller one, PAID alone, so it covers as little of the (already struck-through) name as it can. When `land` is set it drops in large and
+ * settles with a little spring, the way a stamp hits the page; otherwise it is simply there.
+ */
+function PaidStamp({ date, tilt, land }: { date: string; tilt: number; land: boolean }) {
+  return (
+    <motion.span
+      aria-hidden
+      className="stamp pointer-events-none absolute top-1/2 right-full mr-1.5 px-1.5 pt-[3px] pb-[3px] whitespace-nowrap sm:mr-3 sm:px-2 sm:pb-1"
+      style={{ rotate: tilt, y: '-50%' }}
+      initial={land ? { scale: 2.3, opacity: 0 } : false}
+      animate={{ scale: 1, opacity: 0.9 }}
+      exit={{ opacity: 0, transition: { duration: 0.15 } }}
+      transition={{ scale: { type: 'spring', stiffness: 520, damping: 20, mass: 0.8 }, opacity: { duration: 0.12 } }}
+    >
+      <span className="block text-[13px] sm:text-[16px]">PAID</span>
+      <span className="mt-0.5 hidden text-[7px] tracking-[0.2em] sm:block">{fmtDate(date, 'd MMM yyyy').toUpperCase()}</span>
+    </motion.span>
+  )
+}
+
 /**
  * One bill on one due date, as a ledger line. Tap the entry for details; tick the box to settle it,
  * or skip it (the Skip button on hover/focus, or swipe left on touch screens). Swipe right settles.
@@ -31,7 +61,7 @@ const SWIPE_COMMIT = 84
  */
 export function LedgerRow({ occurrence: o, showDate = true, strikeOnExit = false, ref }: LedgerRowProps) {
   const { money } = useMoney()
-  const { openOccurrence } = useUI()
+  const { openOccurrence, today } = useUI()
   const actions = useBillActions()
   const touch = useMediaQuery('(pointer: coarse)')
   const present = useIsPresent()
@@ -91,7 +121,8 @@ export function LedgerRow({ occurrence: o, showDate = true, strikeOnExit = false
               transition={{ duration: 0.4, ease: EASE_OUT }}
             />
           </span>
-          <span className="mt-0.5 flex flex-wrap items-baseline gap-x-1.5 text-[13px] text-muted">
+          <span className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-[13px] text-muted">
+            <CategoryMark id={o.bill.category} className="mr-0.5" />
             <StatusText occurrence={o} />
             <span>
               {category(o.bill.category).label}
@@ -99,7 +130,18 @@ export function LedgerRow({ occurrence: o, showDate = true, strikeOnExit = false
             </span>
           </span>
         </span>
-        <span className="text-right">
+        <span className="relative text-right">
+          {/* The PAID stamp sits just left of the amount. It lands when the entry is settled now. */}
+          <AnimatePresence initial={false}>
+            {struck && (
+              <PaidStamp
+                key="stamp"
+                date={o.payment?.paidOn ?? today}
+                tilt={tiltFor(o.key)}
+                land={!present || wasRecentlyPaid(o.key)}
+              />
+            )}
+          </AnimatePresence>
           <span
             className={cx('fig block text-[1.125rem]', late ? 'text-verm' : muted ? 'text-muted' : 'text-ink', skipped && 'line-through')}
             aria-label={skipped ? `${money(o.amount)}, not counted` : undefined}
@@ -141,11 +183,11 @@ export function LedgerRow({ occurrence: o, showDate = true, strikeOnExit = false
   return (
     <motion.li
       ref={ref}
-      // Leaving: (if settled) let the stroke draw, then fade and fold the row's height so the rows below close up.
+      // Leaving: (if settled) let the stroke draw and the stamp land, then fade and fold the row's height so the rows below close up.
       exit={{
         opacity: 0,
         height: 0,
-        transition: strikeOnExit && !leavingSkipped ? { delay: 0.45, duration: 0.3, ease: EASE_OUT } : { duration: 0.22, ease: EASE_OUT },
+        transition: strikeOnExit && !leavingSkipped ? { delay: 0.7, duration: 0.3, ease: EASE_OUT } : { duration: 0.22, ease: EASE_OUT },
       }}
       className="group/row relative overflow-hidden border-b border-rule last:border-b-0"
     >

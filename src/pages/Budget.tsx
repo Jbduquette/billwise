@@ -6,6 +6,7 @@ import { CategoryBars } from '../components/charts/CategoryBars'
 import { ColumnHead, FigureLine } from '../components/layout/Columns'
 import { Button } from '../components/ui/Button'
 import { Figure } from '../components/ui/Figure'
+import { Fleuron } from '../components/ui/MonthVignette'
 import { useMoney } from '../hooks/useMoney'
 import { billShape, budgetForMonth, budgetOutlook, type BillShape, type MonthBudget } from '../lib/budget'
 import { cx } from '../lib/cx'
@@ -55,15 +56,15 @@ export function Budget() {
     <>
       {/* ---------- Hero ---------- */}
       <section
-        className="grid gap-8 border-b border-rule-strong pt-6 pb-7 lg:grid-cols-[1.55fr_1fr] lg:gap-12 lg:pt-9 lg:pb-8"
+        className="grid gap-8 pt-6 lg:grid-cols-[1.55fr_1fr] lg:gap-10 lg:pt-9"
         aria-label={`${monthName} budget`}
       >
         <div className="min-w-0">
           <p className="sc">The budget — {fmtDate(month, 'MMMM yyyy')}</p>
-          <h1 className="mt-3 font-serif text-[2.6rem] leading-[1.02] font-[350] tracking-[-0.03em] text-ink sm:text-[3.4rem] lg:text-[3.85rem]">
+          <h1 className="press mt-3 font-serif text-[2.6rem] leading-[1.02] font-[350] tracking-[-0.03em] text-ink sm:text-[3.4rem] lg:text-[3.85rem]">
             {hasIncome ? (
               <>
-                <Figure value={Math.abs(b.left)} format={money} className={cx('font-[500]', short && 'text-verm')} />{' '}
+                <Figure value={Math.abs(b.left)} format={money} className={cx('font-[500]', short && 'text-verm')} foil={!short} />{' '}
                 <em className="font-[300]">
                   {short ? 'short' : 'left'} in {monthName}.
                 </em>
@@ -74,12 +75,12 @@ export function Budget() {
               </>
             ) : (
               <>
-                Bills take <Figure value={b.bills} format={money} className="font-[500]" />{' '}
+                Bills take <Figure value={b.bills} format={money} className="font-[500]" foil />{' '}
                 <em className="font-[300]">in {monthName}.</em>
               </>
             )}
           </h1>
-          <p className="mt-4 max-w-[38rem] font-serif text-[1.1875rem] leading-[1.45] font-[350] text-ink-2 italic sm:text-[1.3125rem]">
+          <p className="dropcap mt-4 max-w-[38rem] font-serif text-[1.1875rem] leading-[1.45] font-[350] text-ink-2 italic sm:text-[1.3125rem]">
             {deck(b, tense, money)}
           </p>
           {!hasIncome && (
@@ -90,7 +91,7 @@ export function Budget() {
           )}
         </div>
 
-        <div className="lg:border-l lg:border-rule lg:pl-9">
+        <div className="card self-start px-5 pt-4 pb-5 sm:px-6">
           <p className="sc">The month in figures</p>
           <dl className="mt-1">
             <FigureLine label="Coming in" value={<Figure value={b.income} format={money} />} />
@@ -118,9 +119,11 @@ export function Budget() {
         </div>
       </section>
 
-      {/* ---------- Columns ---------- */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3">
-        <section className="pt-6 pb-8 md:pr-8" aria-labelledby="in-h">
+      <Fleuron className="mt-9 mb-7" />
+
+      {/* ---------- Columns, each a card on the page ---------- */}
+      <div className="grid items-start gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+        <section className="md:card md:px-6 md:pt-5 md:pb-5" aria-labelledby="in-h">
           <ColumnHead id="in-h" title="Coming in" note={b.paydays.length ? `${b.paydays.length} ${b.paydays.length === 1 ? 'payday' : 'paydays'}` : undefined} />
           <IncomeList
             budget={b}
@@ -131,7 +134,7 @@ export function Budget() {
           />
         </section>
 
-        <section className="border-t border-rule pt-6 pb-8 md:border-t-0 md:border-l md:pl-8 lg:px-8" aria-labelledby="set-h">
+        <section className="border-t border-rule pt-6 md:card md:border-t md:px-6 md:pt-5 md:pb-5" aria-labelledby="set-h">
           <ColumnHead id="set-h" title="Set aside" note="Each month" />
           <SetAsideList
             items={data.setAsides}
@@ -141,7 +144,7 @@ export function Budget() {
           />
         </section>
 
-        <section className="border-t border-rule pt-6 pb-8 md:col-span-2 lg:col-span-1 lg:border-t-0 lg:border-l lg:pl-8" aria-labelledby="bills-h">
+        <section className="border-t border-rule pt-6 md:card md:col-span-2 md:border-t md:px-6 md:pt-5 md:pb-5 lg:col-span-1" aria-labelledby="bills-h">
           <ColumnHead id="bills-h" title="Bills" note={hasIncome ? `${share(b.bills, b.income)}% of income` : undefined} />
           {b.summary.byCategory.length ? (
             <>
@@ -163,7 +166,7 @@ export function Budget() {
 
       {/* ---------- The months ahead ---------- */}
       {data.income.length > 0 && (
-        <section className="border-t border-rule-strong pt-6 pb-10" aria-labelledby="ahead-h">
+        <section className="mt-6 border-t border-rule pt-6 md:card md:mt-6 md:border-t md:px-6 md:pt-5 md:pb-4" aria-labelledby="ahead-h">
           <ColumnHead id="ahead-h" title="The months ahead" note={<span className="hidden sm:inline">Select one to plan it</span>} />
           <Outlook months={outlook} selected={month} today={today} onSelect={setMonth} />
         </section>

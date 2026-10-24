@@ -34,8 +34,8 @@ export function FigureLine({
 /** Serif column heading with an optional small-caps note. */
 export function ColumnHead({ id, title, note }: { id: string; title: string; note?: ReactNode }) {
   return (
-    <div className="mb-2 flex items-baseline gap-3">
-      <h2 id={id} className="font-serif text-[1.375rem] font-[450] tracking-[-0.01em] text-ink">
+    <div className="mb-2 flex flex-wrap items-baseline gap-x-3">
+      <h2 id={id} className="font-serif text-[1.375rem] font-[450] tracking-[-0.01em] whitespace-nowrap text-ink">
         {title}
       </h2>
       {note && <span className="sc">{note}</span>}

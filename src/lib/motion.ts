@@ -25,3 +25,13 @@ export function markRecentlySkipped(key: string) {
 }
 
 export const wasRecentlySkipped = (key: string) => recentSkips.has(key)
+
+/** Entries settled moments ago in this session: their PAID stamp lands, rather than already being there. */
+const recentPays = new Set<string>()
+
+export function markRecentlyPaid(key: string) {
+  recentPays.add(key)
+  window.setTimeout(() => recentPays.delete(key), 2000)
+}
+
+export const wasRecentlyPaid = (key: string) => recentPays.has(key)

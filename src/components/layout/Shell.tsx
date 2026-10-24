@@ -18,7 +18,7 @@ export function Wordmark({ tagline = false, className }: { tagline?: boolean; cl
   return (
     <span className={cx('inline-block leading-none', className)}>
       <span className="font-serif text-[1.75rem] font-[480] tracking-[-0.02em] text-ink italic">Billwise</span>
-      {tagline && <span className="sc mt-1 block !text-[9.5px]">A private ledger</span>}
+      {tagline && <span className="sc foil mt-1 block !text-[9.5px]">A private ledger</span>}
     </span>
   )
 }
@@ -33,8 +33,8 @@ interface ShellProps {
 export function Masthead({ route, showMonth }: ShellProps) {
   const { openEditor } = useUI()
   return (
-    <header className="relative z-20 hidden lg:block">
-      <div className="mx-auto max-w-[1240px] px-10">
+    <header className="band relative z-20 hidden lg:block">
+      <div className="mx-auto max-w-[1300px] px-10">
         <div className="flex h-[78px] items-center gap-10">
           <a href="#/" className="rounded-[3px]">
             <Wordmark tagline />
@@ -53,7 +53,7 @@ export function Masthead({ route, showMonth }: ShellProps) {
                   {active && (
                     <motion.span
                       layoutId="masthead-active"
-                      className="absolute inset-x-0 bottom-1.5 h-[2px] bg-ink"
+                      className="foil-bg absolute inset-x-0 bottom-1.5 h-[2px]"
                       transition={{ type: 'spring', stiffness: 500, damping: 40 }}
                     />
                   )}
@@ -63,14 +63,14 @@ export function Masthead({ route, showMonth }: ShellProps) {
           </nav>
           <div className="ml-auto flex items-center gap-3">
             {showMonth && <MonthSwitcher />}
-            <Button variant="primary" onClick={() => openEditor(null)}>
+            <Button variant="foil" onClick={() => openEditor(null)}>
               <Plus aria-hidden className="size-4" />
               Enter a bill
             </Button>
           </div>
         </div>
-        <div className="rule-double" />
       </div>
+      <div className="foil-bg h-[3px]" aria-hidden />
     </header>
   )
 }
@@ -79,7 +79,7 @@ export function Masthead({ route, showMonth }: ShellProps) {
 export function PhoneHeader({ showMonth }: Omit<ShellProps, 'route'>) {
   const { openEditor } = useUI()
   return (
-    <header className="relative z-20 pt-[env(safe-area-inset-top)] lg:hidden">
+    <header className="band relative z-20 pt-[env(safe-area-inset-top)] lg:hidden">
       <div className="flex h-16 items-center px-4 sm:px-6">
         <a href="#/" className="rounded-[3px]">
           <Wordmark />
@@ -88,12 +88,13 @@ export function PhoneHeader({ showMonth }: Omit<ShellProps, 'route'>) {
           type="button"
           onClick={() => openEditor(null)}
           aria-label="Enter a bill"
-          className="ml-auto grid size-11 place-items-center rounded-[3px] border-[1.5px] border-ink text-ink transition-colors active:bg-bg-2"
+          className="foil-bg ml-auto grid size-11 place-items-center rounded-[3px] text-[#241a08] shadow-[0_1px_0_rgba(255,255,255,0.4)_inset] transition-[filter] active:brightness-110"
         >
           <Plus aria-hidden className="size-5" />
         </button>
       </div>
-      {showMonth ? <MonthStrip /> : <div className="border-b border-rule" />}
+      {showMonth && <MonthStrip />}
+      <div className="foil-bg h-[3px]" aria-hidden />
     </header>
   )
 }

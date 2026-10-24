@@ -70,6 +70,39 @@
   --on-ink: #f2ede3;
   --shadow-pop: 0 1px 0 rgba(27, 25, 22, 0.06), 0 24px 60px -24px rgba(27, 25, 22, 0.35);
   --grain-opacity: 0.35;
+
+  /* The desk under the page, and the page's own shadow. */
+  --desk: #cbc1ad;
+  --desk-glow: rgba(255, 255, 255, 0.35);
+  --desk-shade: rgba(0, 0, 0, 0.12);
+  --sheet-shadow: 0 2px 3px rgba(40, 30, 15, 0.18), 0 18px 40px -10px rgba(40, 30, 15, 0.42);
+  --card-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 1px 2px rgba(27, 25, 22, 0.07), 0 16px 32px -18px rgba(40, 30, 15, 0.4);
+  --card-edge: rgba(27, 25, 22, 0.08);
+  --press: 0 1px 0 rgba(255, 255, 255, 0.7), 0 -1px 0 rgba(27, 25, 22, 0.14);
+
+  /* Gold foil: dark antique gold on paper, so it stays ≥ 3:1 for display text. */
+  --foil: linear-gradient(112deg, #4f3810 0%, #7d5c22 24%, #a8822f 40%, #6e5019 56%, #8f6c2b 74%, #4f3810 100%);
+  --foil-ink: #6e5019;
+  --foil-lift: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.75));
+
+  /* Category inks: one printed colour each, always shown beside the category's name. */
+  --cat-housing: #9a4a2f;
+  --cat-transport: #3f5d7a;
+  --cat-connectivity: #2f6f6a;
+  --cat-utilities: #94691f;
+  --cat-insurance: #6b4a7a;
+  --cat-health: #4f7a4a;
+  --cat-subscriptions: #a5506b;
+  --cat-debt: #3b4a8a;
+  --cat-other: #7a7164;
+}
+
+/* The masthead band is ink green in both editions. */
+:root {
+  --band: #1d3a31;
+  --on-band: #efe7d4;
+  --on-band-2: rgba(239, 231, 212, 0.74);
+  --foil-bright: linear-gradient(112deg, #a8813a 0%, #e8cd8a 25%, #fff0c4 40%, #c9a254 58%, #f0d898 76%, #a8813a 100%);
 }
 
 /* Ink edition */
@@ -91,6 +124,28 @@
   --on-ink: #16140f;
   --shadow-pop: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 28px 60px -20px rgba(0, 0, 0, 0.8);
   --grain-opacity: 0.12;
+
+  --desk: #0d0c09;
+  --desk-glow: rgba(255, 255, 255, 0.03);
+  --desk-shade: rgba(0, 0, 0, 0.3);
+  --sheet-shadow: 0 2px 3px rgba(0, 0, 0, 0.5), 0 22px 44px -12px rgba(0, 0, 0, 0.8);
+  --card-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 34px -16px rgba(0, 0, 0, 0.8);
+  --card-edge: rgba(237, 230, 216, 0.07);
+  --press: 0 -1px 0 rgba(0, 0, 0, 0.6);
+
+  --foil: var(--foil-bright);
+  --foil-ink: #d9b878;
+  --foil-lift: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.6));
+
+  --cat-housing: #d0805f;
+  --cat-transport: #7fa0c4;
+  --cat-connectivity: #5fb3aa;
+  --cat-utilities: #d4a24a;
+  --cat-insurance: #b08cc4;
+  --cat-health: #8fbf7f;
+  --cat-subscriptions: #d98aa3;
+  --cat-debt: #8f9ce0;
+  --cat-other: #a39a8a;
 }
 
 /* ------------------------------------------------------------------ */
@@ -104,7 +159,12 @@
   }
   body {
     min-height: 100dvh;
-    background: var(--bg);
+    /* The desk the ledger lies on. */
+    background-color: var(--desk);
+    background-image:
+      radial-gradient(ellipse at 30% 0%, var(--desk-glow), transparent 60%),
+      radial-gradient(ellipse at 100% 100%, var(--desk-shade), transparent 55%);
+    background-attachment: fixed;
     color: var(--ink);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -209,6 +269,93 @@
   .hatch {
     background-image: repeating-linear-gradient(135deg, currentColor 0 1.2px, transparent 1.2px 4px);
   }
+
+  /* The page: paper on the desk, with slightly uneven edges and a soft shadow beneath. The paper
+     is its own layer (will-change), so the edge filter is drawn once, not on every change inside. */
+  .sheet {
+    position: relative;
+    isolation: isolate;
+  }
+  .sheet::after {
+    content: "";
+    position: absolute;
+    inset: 6px 4px -2px;
+    z-index: -2;
+    border-radius: 3px;
+    box-shadow: var(--sheet-shadow);
+    pointer-events: none;
+  }
+  .sheet::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--bg);
+    background-image: radial-gradient(ellipse at 50% 0%, var(--desk-glow), transparent 70%);
+    filter: url(#bw-deckle);
+    will-change: transform;
+    pointer-events: none;
+  }
+
+  /* The ink-green masthead. Its controls inherit light-on-dark colours from these tokens. */
+  .band {
+    background: var(--band);
+    color: var(--on-band);
+    --ink: var(--on-band);
+    --ink-2: var(--on-band-2);
+    --muted: var(--on-band-2);
+    --bg-2: rgba(239, 231, 212, 0.08);
+    --rule: rgba(239, 231, 212, 0.16);
+    --rule-strong: rgba(239, 231, 212, 0.4);
+    --control: rgba(239, 231, 212, 0.5);
+    --verm: #f0957b;
+    --foil: var(--foil-bright);
+  }
+
+  /* Letterpress: type pressed into the paper. */
+  .press {
+    text-shadow: var(--press);
+  }
+
+  /* Gold foil, for a few display moments only. */
+  .foil {
+    background: var(--foil);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: none;
+  }
+  .foil-bg {
+    background: var(--foil);
+  }
+
+  /* A drop cap in foil ink opening the month's sentence. */
+  .dropcap::first-letter {
+    float: left;
+    margin: 0.32em 0.06em 0 0;
+    font-size: 3.15em;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 0.8;
+    color: var(--foil-ink);
+  }
+
+  /* The PAID stamp. */
+  .stamp {
+    border: 3px double currentColor;
+    border-radius: 6px;
+    color: var(--verm);
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    line-height: 1;
+    text-align: center;
+    mix-blend-mode: multiply;
+    filter: url(#bw-ink);
+  }
+  :root[data-theme="dark"] .stamp {
+    mix-blend-mode: screen;
+  }
 }
 
 @layer utilities {
@@ -239,4 +386,21 @@
   .hatch {
     background: CanvasText;
   }
+  /* High-contrast mode draws text in system colours: foil text must not vanish. */
+  .foil {
+    background: none;
+    color: CanvasText;
+  }
+  .sheet::before {
+    filter: none;
+  }
+}
+
+/* A raised card on the page. A utility (not a component class) so it can be applied per breakpoint,
+   e.g. `md:card`: on phones, lists sit straight on the page where every pixel of width counts. */
+@utility card {
+  background: var(--surface);
+  border: 1px solid var(--card-edge);
+  border-radius: 4px;
+  box-shadow: var(--card-shadow);
 }

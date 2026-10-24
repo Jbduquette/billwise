@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { fmtDate } from '../lib/dates'
 import { round2 } from '../lib/format'
 import { uid } from '../lib/id'
-import { markRecentlySkipped } from '../lib/motion'
+import { markRecentlyPaid, markRecentlySkipped } from '../lib/motion'
 import type { Bill, IncomeSource, Occurrence, SetAside } from '../lib/types'
 import { useMoney } from '../hooks/useMoney'
 import { useStore, type Action } from './store'
@@ -69,6 +69,7 @@ export function useBillActions() {
       markPaid(o: Occurrence, opts: { amount?: number; paidOn?: string } = {}) {
         const prev = o.payment
         const amount = round2(opts.amount ?? o.bill.amount)
+        if (!prev) markRecentlyPaid(o.key)
         dispatch({
           type: 'pay',
           payment: { id: prev?.id ?? uid(), billId: o.bill.id, dueDate: o.dueDate, amount, paidOn: opts.paidOn ?? today },

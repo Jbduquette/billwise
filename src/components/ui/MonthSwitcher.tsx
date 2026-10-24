@@ -99,7 +99,7 @@ export function MonthStrip({ className }: { className?: string }) {
   }, [month])
 
   return (
-    <nav aria-label="Month" className={cx('border-b border-rule', className)}>
+    <nav aria-label="Month" className={className}>
       <div ref={scroller} className="no-scrollbar relative flex gap-5 overflow-x-auto px-4 sm:px-6">
         {months.map((m) => {
           const active = m === month

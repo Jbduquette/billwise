@@ -75,17 +75,31 @@ How it's built:
 ## Design: the Editorial Ledger
 
 - **Two editions.** Paper (light) and Ink (dark), switchable in Settings. The default follows the device setting.
-- **Four colors.** Paper, ink, vermilion (late or needing attention) and olive (settled). Categories carry no color.
-  Every text pair meets WCAG AA (4.5:1) and every control boundary meets 3:1 in both editions.
+- **Colour.** Paper, ink, vermilion (late or needing attention) and olive (settled), plus:
+  - **Ink green** for the masthead band, with a gold rule beneath it.
+  - **Gold foil**, kept for a few moments: the month's headline figure, the drop cap, the selected month in the
+    trend, the "Enter a bill" button. It's a dark antique gold on paper and a bright gold on ink, and every stop
+    of the gradient is at least 3:1 for display text.
+  - **Category inks**: one muted printer's colour per category, shown as a small diamond and in the breakdown
+    bars, always beside the category's name.
+
+  Every text pair meets WCAG AA (4.5:1) and every control and graphic boundary meets 3:1 in both editions.
+- **Paper with depth.** The page is a sheet of paper on a desk: uneven edges (an SVG displacement filter, drawn once
+  as its own layer), a soft shadow, and raised cards for the month's figures and lists. Headlines are lightly
+  letterpressed. On phones the lists sit straight on the page so every pixel of width goes to the bills.
 - **Type.** Fraunces, a variable serif with an optical-size axis, for headlines and figures. Instrument Sans for
-  interface text. Numbers use lining, tabular figures.
-- **Status is typographic.** Settled entries are struck through with a pen-stroke, late entries are set in
-  vermilion, and status is always spelled out in words as well.
-- **Imagery.** Engraving-style line art (`src/components/ui/Engraving.tsx`) is drawn in the current ink color, so it
-  suits both editions.
+  interface text. Numbers use lining, tabular figures. The month's sentence opens with a drop cap.
+- **Status is typographic.** Settled entries are struck through with a pen-stroke and carry a vermilion **PAID**
+  rubber stamp with the date. Late entries are set in vermilion, and status is always spelled out in words as well.
+- **Imagery.** Engraving-style line art is drawn in the current ink colour, so it suits both editions:
+  - an engraving for each month beside the headline on wide screens (`src/components/ui/MonthVignette.tsx`:
+    January's pine, February's snowdrops… October's oak, November's maple, December's holly);
+  - fleurons between sections;
+  - the illustrations in empty states (`src/components/ui/Engraving.tsx`).
 - **Motion.** Figures "set" digit by digit and rules draw in on the first screen only. After that:
-  - Settling an entry draws a stroke through it, then the row folds away.
-  - On touch screens, you can swipe an entry right to settle it.
+  - Settling an entry drops the PAID stamp onto it with a little spring, and in "Coming due" the row then folds away.
+  - Changing month, the big figures count to their new values and the page turns from its spine.
+  - On touch screens, you can swipe an entry right to settle it, or left to skip it.
   - Pages cross-fade quickly, with no repeated fade-ups.
 
   Everything respects `prefers-reduced-motion`.
@@ -186,7 +200,7 @@ Lighthouse 12, production build, first visit (median of 3 mobile runs):
 
 | Profile | Performance | Accessibility | Best practices | SEO | First paint | Main content (LCP) | Layout shift |
 |---|---|---|---|---|---|---|---|
-| Mobile (simulated slow 4G) | 94 | 100 | 100 | 100 | 1.8 s | 2.9 s | 0 |
+| Mobile (simulated slow 4G) | 97 | 100 | 100 | 100 | 1.8 s | 2.3 s | 0 |
 | Desktop | 100 | 100 | 100 | 100 | 0.4 s | 0.6 s | 0 |
 
 - **Fonts.** The three faces are self-hosted, subset, and registered after first paint (`src/lib/fonts.ts`). Until

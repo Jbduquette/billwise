@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Direction 1, dressed · Billwise mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #f4efe4; --paper-2: #ebe3d3; --surface: #faf6ee; --ink: #1b1916; --ink-2: #4a453d; --muted: #6b6358;
+    --rule: rgba(27, 25, 22, 0.13); --rule-strong: rgba(27, 25, 22, 0.5);
+    --verm: #a53b26; --olive: #4a6236;
+    --band: #1d3a31; --band-2: #24463b; --on-band: #efe7d4;
+    --foil: linear-gradient(112deg, #4f3810 0%, #7d5c22 24%, #b8913f 40%, #6e5019 56%, #94712f 74%, #4f3810 100%);
+    --foil-dark: linear-gradient(112deg, #a8813a 0%, #e8cd8a 25%, #fff0c4 40%, #c9a254 58%, #f0d898 76%, #a8813a 100%);
+    --desk: #cbc1ad;
+    --serif: "Fraunces", Georgia, serif; --sans: "Instrument Sans", system-ui, sans-serif;
+    /* Category inks: muted, printed-looking, each ≥ 3:1 on paper */
+    --c-housing: #9a4a2f; --c-transport: #3f5d7a; --c-connect: #2f6f6a; --c-util: #94691f;
+    --c-ins: #6b4a7a; --c-health: #4f7a4a; --c-subs: #a5506b; --c-debt: #3b4a8a; --c-other: #7a7164;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); color: var(--ink); background: #d6d0c4; }
+  .fig { font-family: var(--serif); font-variant-numeric: lining-nums tabular-nums; font-optical-sizing: auto; }
+  .sc { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; color: var(--muted); }
+  .foil { background: var(--foil); -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 1px 0 rgba(255,255,255,.75)); }
+  .press { text-shadow: 0 1px 0 rgba(255,255,255,.7), 0 -1px 0 rgba(27,25,22,.14); }
+  .press .foil, .press.foil { text-shadow: none; }
+
+  /* ---------- Board ---------- */
+  .board { width: 2360px; padding: 56px 64px 72px; }
+  .board-head { display: grid; grid-template-columns: 1.25fr 1.1fr 1fr 1.25fr; gap: 48px; align-items: end; margin-bottom: 40px; color: #2a2723; }
+  .board-head h1 { font-family: var(--serif); font-weight: 400; font-size: 54px; letter-spacing: -0.02em; line-height: 1; }
+  .board-head h1 em { font-weight: 300; }
+  .board-head p { margin-top: 12px; font-size: 16px; line-height: 1.5; color: #4a453d; max-width: 560px; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 12px; }
+  .sw { width: 78px; }
+  .sw i { display: block; height: 56px; border-radius: 4px; border: 1px solid rgba(0,0,0,.12); }
+  .sw b { display: block; margin-top: 7px; font-size: 12.5px; }
+  .sw span { font-size: 11.5px; color: #6b6358; font-family: ui-monospace, monospace; }
+  .notes ol { margin-top: 10px; padding-left: 20px; font-size: 14px; line-height: 1.55; color: #2a2723; }
+  .notes li + li { margin-top: 4px; }
+  .notes b { font-weight: 600; }
+  .label { margin-bottom: 14px; font-size: 13px; color: #5d574e; letter-spacing: .04em; }
+  .row { display: flex; gap: 56px; align-items: flex-start; }
+
+  /* ---------- Desk, sheet, deckle ---------- */
+  .desk {
+    position: relative; overflow: hidden; background: var(--desk);
+    background-image:
+      radial-gradient(ellipse at 30% 0%, rgba(255,255,255,.35), transparent 60%),
+      radial-gradient(ellipse at 100% 100%, rgba(0,0,0,.12), transparent 55%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .2  0 0 0 0 .17  0 0 0 0 .12  0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .sheet { position: relative; isolation: isolate; }
+  .sheet::after { /* the shadow the page casts on the desk */
+    content: ""; position: absolute; inset: 6px 4px -2px; z-index: -2; border-radius: 3px;
+    box-shadow: 0 2px 3px rgba(40,30,15,.18), 0 18px 40px -10px rgba(40,30,15,.45);
+  }
+  .sheet::before { /* the paper itself, with torn-feeling edges */
+    content: ""; position: absolute; inset: 0; z-index: -1; background: var(--paper);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35  0 0 0 0 .3  0 0 0 0 .22  0 0 0 .13 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"),
+      radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.5), transparent 70%);
+    filter: url(#deckle);
+  }
+
+  /* ---------- Desktop ---------- */
+  .desktop { width: 1440px; border-radius: 10px; overflow: hidden; box-shadow: 0 40px 90px -30px rgba(30,25,15,.55); }
+  .band { background: var(--band); color: var(--on-band); position: relative; }
+  .band::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px;
+    background: var(--foil); opacity: .9; }
+  .band .in { height: 82px; display: flex; align-items: center; gap: 44px; padding: 0 64px; }
+  .wordmark { font-family: var(--serif); font-style: italic; font-weight: 480; font-size: 30px; letter-spacing: -.02em; line-height: 1; }
+  .wordmark small { display: block; margin-top: 4px; font-family: var(--sans); font-style: normal; font-size: 9.5px; letter-spacing: .2em; font-weight: 600;
+    background: var(--foil-dark); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .nav { display: flex; gap: 30px; font-size: 15px; }
+  .nav a { color: rgba(239,231,212,.72); text-decoration: none; position: relative; padding: 6px 0; }
+  .nav a.on { color: var(--on-band); font-weight: 600; }
+  .nav a.on::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px; background: var(--foil-dark); }
+  .band .right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .month { display: flex; align-items: center; gap: 14px; font-family: var(--serif); font-size: 19px; }
+  .month .yr { opacity: .6; }
+  .circ { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid rgba(239,231,212,.5); display: grid; place-items: center; font-size: 15px; }
+  .btn-foil { background: var(--foil-dark); color: #2a1f0a; font-weight: 700; font-size: 14px; padding: 12px 18px; border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(255,255,255,.4) inset, 0 6px 16px -6px rgba(0,0,0,.5); }
+
+  .desk.d { padding: 34px 40px 46px; }
+  .sheet.d { padding: 40px 54px 44px; }
+
+  .hero { display: grid; grid-template-columns: 1.5fr 1fr; gap: 44px; position: relative; }
+  .dateline { display: flex; align-items: center; gap: 12px; }
+  .dateline .no { font-family: var(--serif); font-style: italic; font-size: 15px; color: var(--ink-2); }
+  h2.head { margin-top: 14px; font-family: var(--serif); font-weight: 340; font-size: 64px; line-height: 1.02; letter-spacing: -.03em; }
+  h2.head .amt { font-weight: 560; }
+  h2.head em { font-weight: 300; }
+  .deck { margin-top: 18px; max-width: 610px; font-family: var(--serif); font-style: italic; font-weight: 350; font-size: 21px; line-height: 1.45; color: var(--ink-2); }
+  .deck .cap { float: left; font-style: normal; font-weight: 500; font-size: 66px; line-height: .8; margin: 6px 3px 0 0; }
+  .deck .late { color: var(--verm); }
+
+  .card { background: var(--surface); border: 1px solid rgba(27,25,22,.08); border-radius: 4px;
+    box-shadow: 0 1px 0 rgba(255,255,255,.8) inset, 0 1px 2px rgba(27,25,22,.07), 0 16px 32px -18px rgba(40,30,15,.4); }
+  .figures { padding: 22px 26px 22px; position: relative; }
+  .line { display: flex; align-items: baseline; padding: 10px 0; border-bottom: 1px dotted var(--rule-strong); }
+  .line dt { font-size: 15px; color: var(--ink-2); }
+  .line dd { margin-left: auto; font-family: var(--serif); font-size: 25px; font-variant-numeric: tabular-nums; }
+  .line.late dt, .line.late dd { color: var(--verm); }
+  .split { margin-top: 18px; display: flex; height: 10px; gap: 2px; }
+  .split .a { width: 96%; background: var(--olive); box-shadow: 0 1px 0 rgba(255,255,255,.4) inset; }
+  .split .b { flex: 1; border: 1px solid var(--ink); background: repeating-linear-gradient(135deg, var(--ink) 0 1.2px, transparent 1.2px 4px); }
+  .split-k { margin-top: 8px; display: flex; justify-content: space-between; }
+
+  .vignette { position: absolute; right: 455px; top: 118px; width: 165px; color: #3b3328; opacity: .9; }
+
+  .fleuron { display: flex; align-items: center; gap: 18px; margin: 34px 0 26px; color: #8a6a2f; }
+  .fleuron::before, .fleuron::after { content: ""; flex: 1; height: 0; border-top: 1px solid var(--rule-strong); }
+  .fleuron svg { width: 64px; height: 18px; }
+
+  .cols { display: grid; grid-template-columns: 1.3fr 1fr .95fr; gap: 26px; align-items: start; }
+  .col { padding: 20px 22px 22px; }
+  .col h3 { font-family: var(--serif); font-weight: 460; font-size: 23px; letter-spacing: -.01em; display: flex; align-items: baseline; gap: 12px; }
+  .grp { margin-top: 14px; padding-bottom: 6px; border-bottom: 1px solid var(--rule-strong); }
+  .grp.late { color: var(--verm); }
+  .entry { position: relative; display: grid; grid-template-columns: 44px 1fr auto 28px; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--rule); }
+  .entry .d { text-align: center; line-height: 1; }
+  .entry .d b { display: block; font-family: var(--serif); font-weight: 380; font-size: 24px; }
+  .entry .d span { display: block; margin-top: 4px; font-size: 9px; }
+  .entry .nm { font-size: 15px; font-weight: 500; }
+  .entry .meta { margin-top: 3px; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 7px; }
+  .tick { width: 8px; height: 8px; transform: rotate(45deg); flex: none; border-radius: 1px; }
+  .entry .amt { font-family: var(--serif); font-size: 19px; font-variant-numeric: tabular-nums; }
+  .box { width: 19px; height: 19px; border: 1.5px solid var(--ink-2); border-radius: 2px; justify-self: end; }
+  .box.late { border-color: var(--verm); }
+  .box.on { background: var(--olive); border-color: var(--olive); display: grid; place-items: center; }
+  .entry.is-late .d b, .entry.is-late .nm, .entry.is-late .amt { color: var(--verm); }
+  .entry.settled .nm, .entry.settled .amt, .entry.settled .d b { color: var(--muted); }
+  .entry.settled .nm { text-decoration: line-through; text-decoration-color: var(--ink-2); }
+
+  /* The PAID stamp */
+  .stamp { position: absolute; right: 150px; top: 50%; transform: translateY(-50%) rotate(-9deg); color: var(--verm);
+    border: 3px double currentColor; border-radius: 6px; padding: 3px 10px 4px; text-align: center; line-height: 1;
+    font-family: var(--sans); font-weight: 700; letter-spacing: .16em; mix-blend-mode: multiply; opacity: .9; filter: url(#ink); pointer-events: none; }
+  .stamp b { display: block; font-size: 20px; }
+  .stamp small { display: block; margin-top: 2px; font-size: 8.5px; letter-spacing: .2em; }
+
+  .cat { padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .cat .t { display: flex; align-items: baseline; gap: 10px; font-size: 14px; }
+  .cat .t .n { flex: 1; display: flex; align-items: center; gap: 8px; }
+  .cat .t .v { font-family: var(--serif); font-size: 17px; font-variant-numeric: tabular-nums; }
+  .cat .t .p { width: 34px; text-align: right; font-family: var(--serif); font-size: 12px; color: var(--muted); }
+  .cat .bar { margin-top: 8px; height: 4px; background: rgba(27,25,22,.07); border-radius: 2px; overflow: hidden; }
+  .cat .bar i { display: block; height: 100%; border-radius: 2px; }
+  .aside { margin-top: 14px; font-family: var(--serif); font-style: italic; font-size: 15px; color: var(--ink-2); }
+
+  .trend { display: flex; align-items: flex-end; gap: 12px; height: 190px; margin-top: 18px; padding: 0 4px; border-bottom: 1.5px solid var(--ink); }
+  .trend .m { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 6px; }
+  .trend .m .bar { width: 100%; border-radius: 2px 2px 0 0; background: var(--ink); position: relative; box-shadow: 0 1px 0 rgba(255,255,255,.25) inset; }
+  .trend .m .bar .open { position: absolute; left: 0; right: 0; top: 0; background: repeating-linear-gradient(135deg, var(--ink) 0 1.2px, var(--surface) 1.2px 4px); border: 1px solid var(--ink); border-bottom: 0; border-radius: 2px 2px 0 0; }
+  .trend .m.sel .bar { background: var(--foil); }
+  .trend .m .v { font-family: var(--serif); font-size: 11.5px; color: var(--muted); }
+  .trend-l { display: flex; gap: 12px; padding: 8px 4px 0; }
+  .trend-l span { flex: 1; text-align: center; }
+  .trend-l span.on { color: var(--ink); }
+
+  /* ---------- Phone (Ink edition) ---------- */
+  .phone { width: 410px; padding: 10px; border-radius: 52px; background: #0f0e0b; box-shadow: 0 40px 80px -30px rgba(0,0,0,.65), 0 0 0 2px #2b2924 inset; }
+  .screen { border-radius: 43px; overflow: hidden; height: 1010px; background: #0d1a16; position: relative; }
+  .ink { --paper: #191712; --surface: #211e18; --ink: #ede6d8; --ink-2: #c9c0b0; --muted: #a39a8a; --rule: rgba(237,230,216,.12); --rule-strong: rgba(237,230,216,.42);
+    --verm: #e0694f; --olive: #9db57f; --foil: var(--foil-dark); color: var(--ink); }
+  .ink .foil { filter: drop-shadow(0 1px 0 rgba(0,0,0,.6)); }
+  .ink .press { text-shadow: 0 -1px 0 rgba(0,0,0,.6); }
+  .ink .card { background: var(--surface); border-color: rgba(237,230,216,.07); box-shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 18px 34px -16px rgba(0,0,0,.8); }
+  .ink .sheet::before { background-image: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.04), transparent 70%); filter: none; }
+  .ink .stamp { mix-blend-mode: screen; }
+  .ink .box { border-color: var(--ink-2); }
+  .p-band { background: var(--band); padding: 54px 20px 0; position: relative; }
+  .p-band::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--foil-dark); }
+  .p-top { display: flex; align-items: center; height: 52px; }
+  .p-top .wordmark { font-size: 27px; color: var(--on-band); }
+  .p-plus { margin-left: auto; width: 42px; height: 42px; border-radius: 3px; display: grid; place-items: center; background: var(--foil-dark); color: #2a1f0a; font-size: 24px; font-weight: 500; }
+  .p-months { display: flex; gap: 22px; padding: 12px 0 13px; font-size: 14.5px; color: rgba(239,231,212,.6); white-space: nowrap; }
+  .p-months .on { color: var(--on-band); font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 16px; position: relative; }
+  .p-months .on::after { content: ""; position: absolute; left: 0; right: 0; bottom: -13px; height: 2px; background: #e0694f; }
+  .p-body { background: #131210; padding: 14px 12px 0; height: calc(100% - 172px); }
+  .sheet.p { padding: 20px 18px 16px; border-radius: 3px; }
+  .ink .sheet.p::before { background: var(--paper); }
+  .p-body h2.head { font-size: 40px; margin-top: 10px; }
+  .p-body .deck { font-size: 17.5px; margin-top: 12px; }
+  .p-body .deck .cap { font-size: 52px; margin: 4px 2px 0 0; }
+  .p-body .figures { margin-top: 18px; padding: 10px 16px 16px; }
+  .p-body .line dd { font-size: 21px; }
+  .p-body .line { padding: 8px 0; }
+  .p-body .entry { grid-template-columns: 38px 1fr auto 24px; gap: 10px; padding: 9px 0; }
+  .p-body .entry .d b { font-size: 21px; }
+  .p-body .stamp { right: 112px; }
+  .p-tabs { position: absolute; left: 0; right: 0; bottom: 0; height: 74px; background: #131210; border-top: 1px solid rgba(237,230,216,.12); display: flex; padding: 0 6px 16px; }
+  .p-tabs span { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-size: 9.5px; letter-spacing: .14em; font-weight: 600; color: #8f8778; }
+  .p-tabs span i { width: 5px; height: 5px; border-radius: 50%; }
+  .p-tabs span.on { color: #ede6d8; }
+  .p-tabs span.on i { background: #e0694f; }
+
+  /* ---------- Details strip ---------- */
+  .details { display: grid; grid-template-columns: 1.15fr 1fr 1fr 1.1fr; gap: 28px; margin-top: 56px; }
+  .tile { background: var(--paper); border-radius: 8px; padding: 22px 24px 24px; box-shadow: 0 20px 40px -24px rgba(40,30,15,.45); }
+  .tile h4 { font-family: var(--serif); font-weight: 460; font-size: 21px; }
+  .tile p.what { margin-top: 6px; font-size: 13.5px; line-height: 1.5; color: var(--ink-2); }
+  .frames { margin-top: 16px; display: grid; gap: 10px; }
+  .frame { position: relative; background: var(--surface); border: 1px solid var(--rule); border-radius: 4px; padding: 0 14px; }
+  .frame .entry { border-bottom: 0; }
+  .frame .k { position: absolute; left: -2px; top: -9px; font-size: 9.5px; letter-spacing: .14em; font-weight: 700; color: var(--muted); background: var(--paper); padding: 0 6px; }
+  .stamp.mid { transform: translateY(-50%) rotate(-15deg) scale(1.9); opacity: .25; filter: blur(1.5px); }
+  .demo { margin-top: 14px; display: flex; gap: 8px; }
+  .demo button { font: 600 13px var(--sans); padding: 9px 14px; border-radius: 3px; border: 1px solid var(--ink-2); background: transparent; color: var(--ink); cursor: pointer; }
+  .demo button.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .live .stamp { opacity: 0; }
+  .live.stamped .stamp { animation: stamp .42s cubic-bezier(.2,.9,.25,1.15) forwards; }
+  .live.stamped .nm { text-decoration: line-through; color: var(--muted); }
+  .live.stamped .box { background: var(--olive); border-color: var(--olive); }
+  @keyframes stamp {
+    0% { opacity: 0; transform: translateY(-50%) rotate(-16deg) scale(2.3); filter: blur(2px); }
+    70% { opacity: .95; transform: translateY(-50%) rotate(-8deg) scale(.94); filter: url(#ink); }
+    100% { opacity: .9; transform: translateY(-50%) rotate(-9deg) scale(1); filter: url(#ink); }
+  }
+  .live.stamped { animation: thud .32s ease-out .22s; }
+  @keyframes thud { 0%,100% { transform: none; } 40% { transform: translateY(1.5px); } }
+  .count { margin-top: 18px; font-family: var(--serif); font-weight: 340; font-size: 44px; letter-spacing: -.02em; }
+  .count .foil { font-weight: 560; }
+  .ticks { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px 14px; font-size: 13px; }
+  .ticks span { display: flex; align-items: center; gap: 8px; }
+  .orn { margin-top: 14px; display: grid; grid-template-columns: 110px 1fr; gap: 16px; align-items: center; }
+  .orn .bigcap { font-family: var(--serif); font-weight: 500; font-size: 96px; line-height: .8; text-align: center; }
+  .turn { margin-top: 16px; position: relative; height: 150px; perspective: 900px; }
+  .turn .pg { position: absolute; inset: 0 30px 0 30px; background: var(--surface); border: 1px solid var(--rule); border-radius: 3px; padding: 14px 16px; }
+  .turn .pg.back { transform: translateX(10px); }
+  .turn .pg.front { transform-origin: left center; transform: rotateY(-38deg); box-shadow: 18px 10px 30px -14px rgba(40,30,15,.5); background: linear-gradient(90deg, var(--surface) 70%, #efe7d6); }
+  .turn .pg .sc { display: block; }
+  .turn .pg .fig { display: block; margin-top: 8px; font-size: 26px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- Uneven paper edges -->
+    <filter id="deckle" x="-2%" y="-2%" width="104%" height="104%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="7" result="n" />
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <!-- Rubber-stamp ink: knocks speckles out of the stamp and roughens its edges -->
+    <filter id="ink" x="-10%" y="-20%" width="120%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="noise" />
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.3 1.32" result="mask" />
+      <feComposite in="SourceGraphic" in2="mask" operator="in" result="speckled" />
+      <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="9" result="w" />
+      <feDisplacementMap in="speckled" in2="w" scale="1.6" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <pattern id="hatch" width="3.2" height="3.2" patternUnits="userSpaceOnUse" patternTransform="rotate(40)">
+      <line x1="0" y1="0" x2="0" y2="3.2" stroke="currentColor" stroke-width=".8" />
+    </pattern>
+    <pattern id="xhatch" width="3.4" height="3.4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <path d="M0 0V3.4M0 0H3.4" stroke="currentColor" stroke-width=".7" fill="none" />
+    </pattern>
+    <!-- Engraved oak leaf, pointing up from its stem at 0,0 -->
+    <path id="leaf" d="M0,0 C-4,-8 -14,-10 -12,-18 C-20,-20 -23,-30 -14,-33 C-23,-38 -21,-50 -11,-50 C-15,-60 -8,-70 0,-80 C8,-70 15,-60 11,-50 C21,-50 23,-38 14,-33 C23,-30 20,-20 12,-18 C14,-10 4,-8 0,0 Z" />
+    <clipPath id="leafclip"><use href="#leaf" /></clipPath>
+    <g id="oakleaf">
+      <use href="#leaf" fill="var(--paper)" stroke="currentColor" stroke-width="1.1" />
+      <rect x="0" y="-82" width="26" height="84" fill="url(#hatch)" clip-path="url(#leafclip)" />
+      <path d="M0,0 L0,-76 M0,-16 L-11,-24 M0,-16 L11,-24 M0,-31 L-13,-38 M0,-31 L13,-38 M0,-46 L-10,-52 M0,-46 L10,-52 M0,-60 L-6,-66 M0,-60 L6,-66" stroke="currentColor" stroke-width=".8" fill="none" />
+    </g>
+    <g id="acorn">
+      <path d="M-7,1 C-8,13 -3,20 0,22 C3,20 8,13 7,1 Z" fill="var(--paper)" stroke="currentColor" stroke-width="1.1" />
+      <path d="M0,1 C3,1 8,1 7,1 C8,13 3,20 0,22 Z" fill="url(#hatch)" />
+      <ellipse cx="0" cy="0" rx="9.5" ry="6" fill="url(#xhatch)" stroke="currentColor" stroke-width="1.1" />
+      <path d="M0,-6 L1,-10" stroke="currentColor" stroke-width="1.4" />
+    </g>
+    <!-- October vignette: an oak sprig -->
+    <g id="sprig">
+      <path d="M8,118 C40,96 70,84 132,70" stroke="currentColor" stroke-width="1.6" fill="none" />
+      <use href="#oakleaf" transform="translate(56,90) rotate(-24) scale(.82)" />
+      <use href="#oakleaf" transform="translate(96,78) rotate(58) scale(.72)" />
+      <use href="#oakleaf" transform="translate(118,73) rotate(14) scale(.6)" />
+      <use href="#acorn" transform="translate(38,104) rotate(18)" />
+      <use href="#acorn" transform="translate(76,96) rotate(-12) scale(.86)" />
+    </g>
+    <!-- Fleuron divider -->
+    <g id="fleuron">
+      <path d="M32,9 C26,1 16,1 12,6 C9,10 13,15 18,12 C21,10 19,6 16,7 M32,9 C38,1 48,1 52,6 C55,10 51,15 46,12 C43,10 45,6 48,7 M32,9 C29,13 27,15 22,16 M32,9 C35,13 37,15 42,16 M1,9 H10 M54,9 H63" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round" />
+      <path d="M32,4 L35,9 L32,14 L29,9 Z" fill="currentColor" />
+    </g>
+    <g id="check"><path d="M3 8.5 6.5 12 13 4.5" stroke="#f4efe4" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" /></g>
+  </defs>
+</svg>
+
+<div class="board">
+  <div class="board-head">
+    <div>
+      <h1>The Ledger, <em>dressed</em></h1>
+      <p>Same Editorial Ledger, with four layers of richness added. Each can be kept or dropped on its own; the desktop shows the Paper edition, the phone the Ink edition.</p>
+    </div>
+    <div>
+      <div class="sc" style="margin-bottom:12px">New colours</div>
+      <div class="swatches">
+        <div class="sw"><i style="background:#cbc1ad"></i><b>Desk</b><span>#cbc1ad</span></div>
+        <div class="sw"><i style="background:#1d3a31"></i><b>Ink green</b><span>#1d3a31</span></div>
+        <div class="sw"><i style="background:linear-gradient(112deg,#6b4e1d,#a9823a 22%,#e0c27a 38%,#9a7432 54%,#c79f52 72%,#6b4e1d)"></i><b>Gold foil</b><span>gradient</span></div>
+        <div class="sw"><i style="background:#f4efe4"></i><b>Paper</b><span>#f4efe4</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="sc" style="margin-bottom:12px">Category inks</div>
+      <div class="swatches" style="gap:8px">
+        <div class="sw" style="width:40px"><i style="background:var(--c-housing);height:40px"></i></div>
+        <div class="sw" style="width:40px"><i style="background:var(--c-debt);height:40px"></i></div>
+        <div class="sw" style="width:40px"><i style="background:var(--c-ins);height:40px"></i></div>
+        <div class="sw" style="width:40px"><i style="background:var(--c-connect);height:40px"></i></div>
+        <div class="sw" style="width:40px"><i style="background:var(--c-util);height:40px"></i></div>
+        <div class="sw" style="width:40px"><i style="background:var(--c-health);height:40px"></i></div>
+        <div class="sw" style="width:40px"><i style="background:var(--c-subs);height:40px"></i></div>
+        <div class="sw" style="width:40px"><i style="background:var(--c-transport);height:40px"></i></div>
+      </div>
+      <p style="margin-top:10px;font-size:13px;color:#4a453d">Muted printer's inks, one per category, always next to its name (never colour alone).</p>
+    </div>
+    <div class="notes">
+      <div class="sc">The four layers</div>
+      <ol>
+        <li><b>Paper with depth</b>: a desk under the page, uneven paper edges, raised cards with soft shadows, letterpress headline.</li>
+        <li><b>Livelier motion</b>: a red PAID stamp lands when you settle, figures count up, months turn like pages.</li>
+        <li><b>Ink &amp; foil</b>: ink-green masthead, gold-foil figures and rule, a coloured mark per category.</li>
+        <li><b>Engraved ornaments</b>: a monthly vignette (October's oak), fleuron dividers, a drop cap.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- ================= DESKTOP ================= -->
+    <div>
+      <div class="label">Overview · desktop · Paper edition</div>
+      <div class="desktop">
+        <div class="band"><div class="in">
+          <div class="wordmark">Billwise<small>A PRIVATE LEDGER</small></div>
+          <nav class="nav"><a class="on">Overview</a><a>Bills</a><a>Budget</a><a>Calendar</a><a>Settings</a></nav>
+          <div class="right">
+            <div class="month"><span class="circ">‹</span>October <span class="yr">2026</span><span class="circ">›</span></div>
+            <span class="btn-foil">＋ Enter a bill</span>
+          </div>
+        </div></div>
+
+        <div class="desk d">
+          <div class="sheet d">
+            <section class="hero">
+              <div>
+                <div class="dateline"><span class="sc">No. 10</span><span class="no">— Wednesday, 21 October 2026</span></div>
+                <h2 class="head press">You owe <span class="amt fig foil">$3,208.74</span> <em>in October.</em></h2>
+                <p class="deck"><span class="cap foil">T</span>en of twelve bills are settled. <span class="late">One is late;</span> the next is Internet, on Thursday.</p>
+              </div>
+              <svg class="vignette" viewBox="0 0 140 130" aria-hidden="true"><use href="#sprig" /></svg>
+              <div class="card figures">
+                <div class="sc">The month in figures</div>
+                <dl style="margin-top:4px">
+                  <div class="line"><dt>Settled</dt><dd>$3,051.76</dd></div>
+                  <div class="line"><dt>Outstanding</dt><dd>$156.98</dd></div>
+                  <div class="line"><dt>Due within 7 days</dt><dd>$91.98</dd></div>
+                  <div class="line late"><dt>Late</dt><dd>$65.00</dd></div>
+                </dl>
+                <div class="split"><div class="a"></div><div class="b"></div></div>
+                <div class="split-k"><span class="sc">96% settled</span><span class="sc">4% open</span></div>
+              </div>
+            </section>
+
+            <div class="fleuron"><svg viewBox="0 0 64 18"><use href="#fleuron" /></svg></div>
+
+            <div class="cols">
+              <section class="card col">
+                <h3>Coming due <span class="sc">5 entries</span></h3>
+                <p class="sc grp late">Late</p>
+                <div class="entry is-late"><div class="d"><b>15</b><span class="sc">Thu</span></div>
+                  <div><div class="nm">Mobile Phone</div><div class="meta"><i class="tick" style="background:var(--c-connect)"></i><span style="color:var(--verm)">6 days late</span> · Phone &amp; internet</div></div>
+                  <div class="amt">$65.00</div><i class="box late"></i></div>
+                <p class="sc grp">Within 7 days</p>
+                <div class="entry"><div class="d"><b>22</b><span class="sc">Thu</span></div>
+                  <div><div class="nm">Internet</div><div class="meta"><i class="tick" style="background:var(--c-connect)"></i>Tomorrow · Phone &amp; internet · Autopay</div></div>
+                  <div class="amt">$79.99</div><i class="box"></i></div>
+                <div class="entry"><div class="d"><b>24</b><span class="sc">Sat</span></div>
+                  <div><div class="nm">Spotify</div><div class="meta"><i class="tick" style="background:var(--c-subs)"></i>In 3 days · Subscriptions</div></div>
+                  <div class="amt">$11.99</div><i class="box"></i></div>
+                <p class="sc grp">Settled in October</p>
+                <div class="entry settled"><div class="d"><b>06</b><span class="sc">Tue</span></div>
+                  <div><div class="nm">Electric</div><div class="meta"><i class="tick" style="background:var(--c-util)"></i>Paid 6 Oct · Utilities</div></div>
+                  <div class="amt">$139.20</div><i class="box on"><svg viewBox="0 0 16 16" width="12"><use href="#check" /></svg></i>
+                  <div class="stamp"><b>PAID</b><small>6 OCT 2026</small></div></div>
+                <div class="entry settled" style="border-bottom:0"><div class="d"><b>09</b><span class="sc">Fri</span></div>
+                  <div><div class="nm">Car Loan</div><div class="meta"><i class="tick" style="background:var(--c-debt)"></i>Paid 8 Oct · Loans &amp; cards</div></div>
+                  <div class="amt">$389.42</div><i class="box on"><svg viewBox="0 0 16 16" width="12"><use href="#check" /></svg></i>
+                  <div class="stamp" style="transform:translateY(-50%) rotate(4deg);right:162px"><b>PAID</b><small>8 OCT 2026</small></div></div>
+              </section>
+
+              <section class="card col">
+                <h3>Where it goes</h3>
+                <div style="margin-top:8px">
+                  <div class="cat"><div class="t"><span class="n"><i class="tick" style="background:var(--c-housing)"></i>Housing</span><span class="v">$1,850.00</span><span class="p">58%</span></div><div class="bar"><i style="width:100%;background:var(--c-housing)"></i></div></div>
+                  <div class="cat"><div class="t"><span class="n"><i class="tick" style="background:var(--c-debt)"></i>Loans &amp; cards</span><span class="v">$849.42</span><span class="p">26%</span></div><div class="bar"><i style="width:46%;background:var(--c-debt)"></i></div></div>
+                  <div class="cat"><div class="t"><span class="n"><i class="tick" style="background:var(--c-ins)"></i>Insurance</span><span class="v">$160.68</span><span class="p">5%</span></div><div class="bar"><i style="width:9%;background:var(--c-ins)"></i></div></div>
+                  <div class="cat"><div class="t"><span class="n"><i class="tick" style="background:var(--c-connect)"></i>Phone &amp; internet</span><span class="v">$144.99</span><span class="p">5%</span></div><div class="bar"><i style="width:8%;background:var(--c-connect)"></i></div></div>
+                  <div class="cat"><div class="t"><span class="n"><i class="tick" style="background:var(--c-util)"></i>Utilities</span><span class="v">$131.17</span><span class="p">4%</span></div><div class="bar"><i style="width:7%;background:var(--c-util)"></i></div></div>
+                  <div class="cat"><div class="t"><span class="n"><i class="tick" style="background:var(--c-health)"></i>Health</span><span class="v">$45.00</span><span class="p">1%</span></div><div class="bar"><i style="width:3%;background:var(--c-health)"></i></div></div>
+                  <div class="cat" style="border-bottom:0"><div class="t"><span class="n"><i class="tick" style="background:var(--c-subs)"></i>Subscriptions</span><span class="v">$27.48</span><span class="p">1%</span></div><div class="bar"><i style="width:2%;background:var(--c-subs)"></i></div></div>
+                </div>
+                <p class="aside">Housing is more than half of the month.</p>
+              </section>
+
+              <section class="card col">
+                <h3>6 months <span class="sc">Select one</span></h3>
+                <div class="trend">
+                  <div class="m"><span class="v">$3.1K</span><div class="bar" style="height:78%"></div></div>
+                  <div class="m"><span class="v">$3.2K</span><div class="bar" style="height:80%"></div></div>
+                  <div class="m"><span class="v">$3.3K</span><div class="bar" style="height:84%"></div></div>
+                  <div class="m"><span class="v">$3.2K</span><div class="bar" style="height:79%"></div></div>
+                  <div class="m"><span class="v">$3.1K</span><div class="bar" style="height:77%"></div></div>
+                  <div class="m sel"><span class="v" style="color:var(--ink)">$3.2K</span><div class="bar" style="height:80%"><div class="open" style="height:5%"></div></div></div>
+                </div>
+                <div class="trend-l sc"><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span class="on">Oct</span></div>
+                <p class="aside" style="margin-top:22px">October's bar is set in gold; its hatched cap is what's still open.</p>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PHONE ================= -->
+    <div>
+      <div class="label">Overview · phone · Ink edition</div>
+      <div class="phone"><div class="screen ink">
+        <div class="p-band">
+          <div class="p-top"><div class="wordmark">Billwise</div><div class="p-plus">＋</div></div>
+          <div class="p-months"><span>August</span><span>September</span><span class="on">October</span><span>November</span><span>Decem</span></div>
+        </div>
+        <div class="p-body">
+          <div class="sheet p">
+            <div class="dateline"><span class="sc">No. 10</span><span class="no">— Wed, 21 October</span></div>
+            <h2 class="head press"><span class="amt fig foil">$3,208.74</span> <em>owed in October.</em></h2>
+            <p class="deck"><span class="cap foil">T</span>en of twelve bills are settled. <span class="late">One is late;</span> the next is Internet, on Thursday.</p>
+            <div class="card figures">
+              <dl>
+                <div class="line"><dt>Settled</dt><dd>$3,051.76</dd></div>
+                <div class="line"><dt>Outstanding</dt><dd>$156.98</dd></div>
+                <div class="line late" style="border-bottom:0"><dt>Late</dt><dd>$65.00</dd></div>
+              </dl>
+            </div>
+            <div class="fleuron" style="margin:20px 0 6px"><svg viewBox="0 0 64 18"><use href="#fleuron" /></svg></div>
+            <div class="entry is-late"><div class="d"><b>15</b><span class="sc">Thu</span></div>
+              <div><div class="nm">Mobile Phone</div><div class="meta"><i class="tick" style="background:#4fa49c"></i><span style="color:var(--verm)">6 days late</span></div></div>
+              <div class="amt">$65.00</div><i class="box late"></i></div>
+            <div class="entry"><div class="d"><b>22</b><span class="sc">Thu</span></div>
+              <div><div class="nm">Internet</div><div class="meta"><i class="tick" style="background:#4fa49c"></i>Tomorrow · Autopay</div></div>
+              <div class="amt">$79.99</div><i class="box"></i></div>
+            <div class="entry settled" style="border-bottom:0"><div class="d"><b>06</b><span class="sc">Tue</span></div>
+              <div><div class="nm">Electric</div><div class="meta"><i class="tick" style="background:#d4a24a"></i>Paid 6 Oct</div></div>
+              <div class="amt">$139.20</div><i class="box on"><svg viewBox="0 0 16 16" width="11"><use href="#check" /></svg></i>
+              <div class="stamp"><b>PAID</b><small>6 OCT 2026</small></div></div>
+          </div>
+        </div>
+        <div class="p-tabs"><span class="on"><i></i>OVERVIEW</span><span><i></i>BILLS</span><span><i></i>BUDGET</span><span><i></i>CALENDAR</span><span><i></i>SETTINGS</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- ================= DETAILS ================= -->
+  <div class="details">
+    <div class="tile">
+      <h4>Livelier motion · the PAID stamp</h4>
+      <p class="what">Tick a bill and a rubber stamp drops onto the line: big and blurred, then a slight bounce and a thud as it lands, inked a little unevenly. Open this file in a browser and press <b>Settle</b> to see it move.</p>
+      <div class="frames">
+        <div class="frame"><span class="k">1 · TICK</span>
+          <div class="entry"><div class="d"><b>22</b><span class="sc">Thu</span></div><div><div class="nm">Internet</div><div class="meta"><i class="tick" style="background:var(--c-connect)"></i>Tomorrow</div></div><div class="amt">$79.99</div><i class="box"></i></div></div>
+        <div class="frame"><span class="k">2 · STAMP FALLS</span>
+          <div class="entry"><div class="d"><b>22</b><span class="sc">Thu</span></div><div><div class="nm">Internet</div><div class="meta"><i class="tick" style="background:var(--c-connect)"></i>Tomorrow</div></div><div class="amt">$79.99</div><i class="box on"><svg viewBox="0 0 16 16" width="12"><use href="#check" /></svg></i>
+            <div class="stamp mid"><b>PAID</b><small>21 OCT 2026</small></div></div></div>
+        <div class="frame live" id="live"><span class="k">3 · LANDED (try it)</span>
+          <div class="entry"><div class="d"><b>22</b><span class="sc">Thu</span></div><div><div class="nm">Internet</div><div class="meta"><i class="tick" style="background:var(--c-connect)"></i>Paid today</div></div><div class="amt">$79.99</div><i class="box"></i>
+            <div class="stamp"><b>PAID</b><small>21 OCT 2026</small></div></div></div>
+      </div>
+      <div class="demo"><button class="primary" onclick="var l=document.getElementById('live');l.classList.remove('stamped');void l.offsetWidth;l.classList.add('stamped')">Settle</button><button onclick="document.getElementById('live').classList.remove('stamped')">Reset</button></div>
+    </div>
+
+    <div class="tile">
+      <h4>Livelier motion · counting &amp; turning</h4>
+      <p class="what">Switching months, the big figure counts to its new value instead of swapping digits, and the page turns from the spine. Both respect the device's reduced-motion setting.</p>
+      <div class="count press">You owe <span class="fig foil" id="ct">$3,208.74</span></div>
+      <div class="turn">
+        <div class="pg back"><span class="sc">No. 11 — November</span><span class="fig">$2,977.17</span></div>
+        <div class="pg front"><span class="sc">No. 10 — October</span><span class="fig">$3,208.74</span></div>
+      </div>
+      <div class="demo"><button class="primary" id="cbtn">Count to November</button></div>
+    </div>
+
+    <div class="tile">
+      <h4>Ink &amp; foil · category marks</h4>
+      <p class="what">A small printed diamond in each category's ink, beside the name on every bill and in the breakdown. Gold foil is kept for a few moments: the month's figure, the selected month, the masthead rule.</p>
+      <div class="ticks">
+        <span><i class="tick" style="background:var(--c-housing)"></i>Housing</span>
+        <span><i class="tick" style="background:var(--c-transport)"></i>Transport</span>
+        <span><i class="tick" style="background:var(--c-connect)"></i>Phone &amp; internet</span>
+        <span><i class="tick" style="background:var(--c-util)"></i>Utilities</span>
+        <span><i class="tick" style="background:var(--c-ins)"></i>Insurance</span>
+        <span><i class="tick" style="background:var(--c-health)"></i>Health</span>
+        <span><i class="tick" style="background:var(--c-subs)"></i>Subscriptions</span>
+        <span><i class="tick" style="background:var(--c-debt)"></i>Loans &amp; cards</span>
+        <span><i class="tick" style="background:var(--c-other)"></i>Other</span>
+      </div>
+      <div class="count" style="font-size:38px;margin-top:22px"><span class="fig foil">$3,208.74</span></div>
+    </div>
+
+    <div class="tile">
+      <h4>Engraved ornaments</h4>
+      <p class="what">A vignette for each month in the hero (October's oak sprig, December's holly, and so on), fleurons between sections, and a drop cap opening the month's sentence.</p>
+      <div class="orn">
+        <div class="bigcap foil">T</div>
+        <svg viewBox="0 0 140 130" style="width:190px;color:#3b3328"><use href="#sprig" /></svg>
+      </div>
+      <div class="fleuron" style="margin:14px 0 0"><svg viewBox="0 0 64 18"><use href="#fleuron" /></svg></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // "Count to" demo: eases the figure from one month's total to the next.
+  const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
+  let at = 3208.74
+  document.getElementById('cbtn').onclick = function () {
+    const from = at, to = at === 3208.74 ? 2977.17 : 3208.74, t0 = performance.now(), el = document.getElementById('ct')
+    this.textContent = to === 2977.17 ? 'Count back to October' : 'Count to November'
+    const step = (t) => {
+      const k = Math.min(1, (t - t0) / 700), e = 1 - Math.pow(1 - k, 3)
+      el.textContent = fmt.format(from + (to - from) * e)
+      if (k < 1) requestAnimationFrame(step); else at = to
+    }
+    requestAnimationFrame(step)
+  }
+</script>
+</body>
+</html>
