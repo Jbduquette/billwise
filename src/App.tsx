@@ -178,6 +178,19 @@ function Root() {
               </motion.div>
             </AnimatePresence>
           </Suspense>
+
+          {/* The colophon: who set this ledger in type. Outside the page fade, so it stays put between pages. */}
+          <footer className="mt-14 border-t border-rule pt-5 text-center text-[13px] text-muted">
+            Site built by{' '}
+            <a
+              href="https://tarheelwebstudio.com"
+              target="_blank"
+              rel="noopener"
+              className="font-medium text-ink-2 underline decoration-rule-strong underline-offset-4 transition-colors hover:text-ink hover:decoration-ink"
+            >
+              Tar Heel Web Studio LLC<span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          </footer>
         </motion.div>
       </main>
       <PaperDefs />
